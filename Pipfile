@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+databases = "*"
+psycopg2 = "*"
+alembic = "*"
+uvicorn = "*"
+pydantic = {extras = ["email"], version = "*"}
+faker = "*"
+aiopg = "*"
+sqlalchemy = "*"
+asyncpg = "*"
+fastapi-jwt-auth = "*"
+passlib = "*"
+python-multipart = "*"
+fastapi-users = "*"
+libgravatar = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
