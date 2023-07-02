@@ -1,4 +1,4 @@
-# Домашнє завдання #11
+# Домашнє завдання #12
 
 Створення REST API для зберігання та управління контактами за допомогою FastAPI та використовувати SQLAlchemy для управління базою даних.
 
@@ -25,33 +25,25 @@
 ## Структура проєкту
 
 ```shell
-.
-├── .gitignore
-├── alembic.ini
-├── Pipfile
-├── Pipfile.lock
-├── README.md
-├── runserver.cmd
-├── migrations
-│   ├── env.py
-│   ├── README
-│   └── script.py.mako
-│   └── versions
-│       └── 11f50bd0a676_create_contacts_table.py
-└── src
-    ├── main.py
-    ├── schemas.py
-    ├── database
-    │   ├── config.ini
-    │   ├── connect.py
-    │   ├── models.py
-    │   └── __init__.py
-    ├── routes
-    │   ├── contacts.py
-    │   └── __init__.py
-    └── utils
-        ├── fake_contacts_create.py
-        └── __init__.py
+src
+├── database/
+│   ├── config.ini
+│   ├── connect.py
+│   └── models.py
+├── repository/
+│   ├── contacts.py
+│   └── users.py
+├── routes/
+│   ├── auth_routs.py
+│   └── contacts_routs.py
+├── services/
+│   └── auth.py
+├── utils/
+│   ├── __init__.py
+│   └── fake_contacts_create.py
+├── app.py
+├── main.py
+└── schemas.py
 ```
 
 ## Запуск сервера

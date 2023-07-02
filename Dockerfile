@@ -15,4 +15,4 @@ RUN pipenv install --system --deploy --ignore-pipfile
 COPY . /app
 
 # Запуск приложения
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["pipenv", "run", "python", "src/main.py"]
