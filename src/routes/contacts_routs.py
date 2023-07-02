@@ -34,7 +34,7 @@ async def get_all_contacts(
     
     email = auth_service.extract_email_from_token(access_token)
 
-    return await contacts.get_all_contacts(session, email)
+    return await contacts.get_all_contacts(email, session)
 
 @router.delete("/{contact_id}")
 async def delete_contact(contact_id: int,
