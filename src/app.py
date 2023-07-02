@@ -29,11 +29,36 @@ app.include_router(contacts_router, prefix='/contacts')
 
 @app.get("/", tags=["Root"])
 async def root():
+    """
+    # Кореневий маршрут
+
+    Це головна точка вхідної точки API.
+
+    ## Відповідь
+
+    Якщо все пройшло успішно, за цією адресою видається вітальне слово
+    - **message**: Привітальне повідомлення ("Hello World!")
+    """
     return {"message": "Hello World!"}
 
 
 @app.get("/api/healthchecker", tags=["Root"])
 async def healthchecker(session: AsyncSession = Depends(get_session)):
+    """
+    # Health Checker
+
+    Перевіряє стан з'єднання з базою даних.
+
+    ## Параметри запиту
+    - **session**: Асинхронна сесія бази даних (залежність)
+
+    ## Відповідь
+    - **message**: Повідомлення про успішне з'єднання з базою даних
+
+    ## Помилки
+    - **HTTP_500_INTERNAL_SERVER_ERROR**: Помилка підключення до бази даних або неправильна конфігурація бази даних
+    """
+
     try:
         result = await session.execute(text("SELECT 1"))
         rows = result.fetchall()

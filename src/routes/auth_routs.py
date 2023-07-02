@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredent
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connect import get_session
-from schemas import UserModel, UserResponse, TokenModel
+from schemas import LoginResponse, UserModel, UserResponse, TokenModel
 
 from repository import users as repository_users
 from services.auth import auth_service
@@ -39,7 +39,7 @@ async def signup(body: UserModel, session: AsyncSession = Depends(get_session)):
     return {"user": new_user, "detail": "User successfully created"}
 
 
-@router.post("/login")
+@router.post("/login", response_model=LoginResponse)
 async def login(body: OAuth2PasswordRequestForm = Depends(),  
                 session: AsyncSession = Depends(get_session)):
     """
@@ -50,7 +50,7 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     - session (SAsyncSession): Об'єкт сесії бази даних.
 
     ## Повертає:
-    - TokenModel: Модель токена, яка містить токен доступу та оновлення.
+    - dict: Об'єкт, що містить користувача та токен доступу.
 
     ## Raises:
     - HTTPException: Якщо недійсна електронна пошта або пароль.
@@ -69,13 +69,11 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     access_token = await auth_service.create_access_token(data={"sub": user.email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, session)
-    return {
-            "user": {
-                "username": "angelka",
-                "email": user.email
-            },
-            "token": access_token
-            }
+
+    return LoginResponse(
+       LoginResponse(user={"username": user.username, "email": user.email},
+                    access_token=access_token)
+                         )
 
 
 @router.get('/refresh_token', response_model=TokenModel, include_in_schema=False)
