@@ -20,7 +20,7 @@
     <script>
       const form = document.getElementById("loginForm");
 
-      form.addEventListener("submit", function (event) {
+      form.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const email = document.getElementById("email").value;
@@ -31,14 +31,15 @@
           password: password,
         };
 
-        axios
-          .post("https://fastapi12.onrender.com/users/login", data)
-          .then(function (response) {
-            console.log(response.data);
-          })
-          .catch(function (error) {
-            console.error(error);
-          });
+        try {
+          const response = await axios.post(
+            "https://fastapi12.onrender.com/users/login",
+            data
+          );
+          console.log(response.data);
+        } catch (error) {
+          console.error(error);
+        }
       });
     </script>
   </body>
