@@ -17,17 +17,17 @@ security = HTTPBearer()
              status_code=status.HTTP_201_CREATED)
 async def signup(body: UserModel, session: AsyncSession = Depends(get_session)):
     """
-    Створює нового користувача.
+    # Створює нового користувача.
 
-    Parameters:
-        body (UserModel): Модель користувача, що містить дані для створення користувача.
-        session (AsyncSession): Об'єкт сесії бази даних.
+    ## Параметри:
+    - body (UserModel): Модель користувача, що містить дані для створення користувача.
+    - session (AsyncSession): Об'єкт сесії бази даних.
 
-    Returns:
-        UserResponse: Об'єкт відповіді, який містить створеного користувача та повідомлення про успішне створення.
+    ## Повертає:
+    - UserResponse: Об'єкт відповіді, який містить створеного користувача та повідомлення про успішне створення.
 
-    Raises:
-        HTTPException: Якщо обліковий запис вже існує.
+    ## Raises:
+    - HTTPException: Якщо обліковий запис вже існує.
 
     """
     exist_user = await repository_users.get_user_by_email(body.email, session)
@@ -43,17 +43,17 @@ async def signup(body: UserModel, session: AsyncSession = Depends(get_session)):
 async def login(body: OAuth2PasswordRequestForm = Depends(),  
                 session: AsyncSession = Depends(get_session)):
     """
-    Аутентифікація користувача та отримання токенів доступу.
+    # Аутентифікація користувача та отримання токенів доступу.
 
-    Parameters:
-        body (OAuth2PasswordRequestForm): Форма запиту аутентифікації, яка містить дані електронної пошти та пароля.
-        session (SAsyncSession): Об'єкт сесії бази даних.
+    ## Параметри:
+    - body (OAuth2PasswordRequestForm): Форма запиту аутентифікації, яка містить дані електронної пошти та пароля.
+    - session (SAsyncSession): Об'єкт сесії бази даних.
 
-    Returns:
-        TokenModel: Модель токена, яка містить токен доступу та оновлення.
+    ## Повертає:
+    - TokenModel: Модель токена, яка містить токен доступу та оновлення.
 
-    Raises:
-        HTTPException: Якщо недійсна електронна пошта або пароль.
+    ## Raises:
+    - HTTPException: Якщо недійсна електронна пошта або пароль.
 
     """
 
@@ -83,17 +83,17 @@ async def refresh_token(
     credentials: HTTPAuthorizationCredentials = Security(security), 
     session: AsyncSession = Depends(get_session)):
     """
-    Оновлює токен доступу за допомогою токена оновлення.
+    # Оновлює токен доступу за допомогою токена оновлення.
 
-    Parameters:
-        credentials (HTTPAuthorizationCredentials): Об'єкт, що містить відправлені HTTP-заголовки авторизації.
-        session (AsyncSession): Об'єкт сесії бази даних.
+    ## Параметри:
+    - credentials (HTTPAuthorizationCredentials): Об'єкт, що містить відправлені HTTP-заголовки авторизації.
+    - session (AsyncSession): Об'єкт сесії бази даних.
 
-    Returns:
-        TokenModel: Модель токена, яка містить новий токен доступу та оновлення.
+    ## Повертає:
+    - TokenModel: Модель токена, яка містить новий токен доступу та оновлення.
 
-    Raises:
-        HTTPException: Якщо недійсний токен оновлення або помилка під час декодування.
+    ## Raises:
+    - HTTPException: Якщо недійсний токен оновлення або помилка під час декодування.
 
     """
     token = credentials.credentials
@@ -122,7 +122,19 @@ async def get_current_user(access_token: str = Header(...,
                                 convert_underscores=False),
                                 session: AsyncSession = Depends(get_session)
                                 ):
-    
+    """
+    # Отримати поточного користувача.
+
+    Отримує поточного користувача за допомогою токена доступу і об'єкта сеансу, повертає ім'я користувача та електронну пошту.
+
+    ## Параметри:
+    - access_token (str): Токен доступу користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - dict: Результат з поточним користувачем у вигляді словника з ім'ям користувача та електронною поштою.
+    """
+
     current_user = await auth_service.get_current_user(access_token, session)
 
     return {"username": current_user.username, 

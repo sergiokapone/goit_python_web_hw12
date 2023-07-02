@@ -20,6 +20,22 @@ async def create_contact(contact: ContactCreate,
                                 convert_underscores=False),
                          session: AsyncSession = Depends(get_session),
                          ):
+    
+    """
+    # Створити контакт.
+
+    Маршрут створює новий контакт з наданими даними за допомогою введеного токену доступу.
+
+    ## Параметри:
+    - contact (ContactCreate): Об'єкт, що містить дані для створення контакту.
+    - access_token (str): Токен доступу для аутентифікації користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - Contact: Новостворений об'єкт контакту.
+
+    """
+        
     email = auth_service.extract_email_from_token(access_token)
 
     return await contacts.create_contact(contact, email, session)
@@ -31,6 +47,19 @@ async def get_all_contacts(
                                 convert_underscores=False),
     session: AsyncSession = Depends(get_session),
                             ):
+    """
+    # Отримати всі контакти.
+
+    Маршрут отримує всі контакти, які належать користувачу, за допомогою введеного токену доступу.
+
+    ## Параметри:
+    - access_token (str): Токен доступу для аутентифікації користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - List[Contact]: Список контактів.
+
+    """
     
     email = auth_service.extract_email_from_token(access_token)
 
@@ -42,6 +71,23 @@ async def delete_contact(contact_id: int,
                                 description="Введіть токен доступу",
                                 convert_underscores=False),
                       session: AsyncSession = Depends(get_session)):
+    
+    """
+    # Видалити контакт.
+
+    Видаляє контакт з вказаним ідентифікатором, якщо користувач з вказаним токеном доступу є власником контакту.
+
+    ## Параметри:
+    - contact_id (int): Ідентифікатор контакту, який потрібно видалити.
+    - access_token (str): Токен доступу для аутентифікації користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - dict: Результат видалення контакту у вигляді словника з повідомленням та видаленим контактом.
+
+    """
+
+
     email = auth_service.extract_email_from_token(access_token)
 
     return await contacts.delete_contact(contact_id, email, session)
@@ -55,8 +101,22 @@ async def delete_contact(contact_id: int,
                                 convert_underscores=False),
                       session: AsyncSession = Depends(get_session)):
     
-    email = auth_service.extract_email_from_token(access_token)
+    """
+    # Оновити контакт.
 
-    print("--------->", email)
+    Оновлює контакт з вказаним ідентифікатором, якщо користувач з вказаним токеном доступу є власником контакту.
+
+    ## Параметри:
+    - contact_id (int): Ідентифікатор контакту, який потрібно оновити.
+    - contact (ContactCreate): Об'єкт, що містить нові дані для оновлення контакту.
+    - access_token (str): Токен доступу для аутентифікації користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - Contact: Оновлений об'єкт контакту.
+    """
+        
+    
+    email = auth_service.extract_email_from_token(access_token)
 
     return await contacts.update_contact(contact_id, contact, email, session)

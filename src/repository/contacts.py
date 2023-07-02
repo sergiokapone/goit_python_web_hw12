@@ -18,6 +18,20 @@ async def create_contact(
                 session: AsyncSession = Depends(get_session)
                         ):
     
+    """
+    Створити контакт.
+
+    Параметри:
+    - contact (ContactCreate): Об'єкт, що містить дані для створення контакту.
+    - email (str, optional): Електронна пошта користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    Повертає:
+    - Contact: Новостворений об'єкт контакту.
+
+    Створює новий контакт з наданими даними. Використовує електронну пошту користувача для зв'язку з власником контакту.
+    """
+        
     current_user = await repository_users.get_user_by_email(email, session)
 
     if not current_user:
@@ -44,6 +58,20 @@ async def get_all_contacts(
         session: AsyncSession = Depends(get_session)
         ):
     
+    """
+    # Отримати всі контакти.
+
+    Отримує всі контакти, які належать користувачу з вказаною електронною поштою.
+
+    ## Параметри:
+    - email (str, optional): Електронна пошта користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - List[Contact]: Список контактів.
+
+    """
+        
     current_user = await repository_users.get_user_by_email(email, session)
 
     if not current_user:
@@ -54,10 +82,26 @@ async def get_all_contacts(
     contacts = result.all()
     return contacts
 
+
 async def delete_contact(contact_id: int,
                          email: str = None, 
                          session: AsyncSession = Depends(get_session)):
-    
+
+    """
+    # Видалити контакт.
+
+    Видаляє контакт з вказаним ідентифікатором, якщо користувач з вказаною електронною поштою є власником контакту.
+
+    ## Параметри:
+    - contact_id (int): Ідентифікатор контакту, який потрібно видалити.
+    - email (str, optional): Електронна пошта користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - dict: Результат видалення контакту у вигляді словника з повідомленням та видаленим контактом.
+
+    """
+
     current_user = await repository_users.get_user_by_email(email, session)
 
 
@@ -86,10 +130,24 @@ async def update_contact(contact_id: int,
                          contact: ContactCreate,
                          email: str = None, 
                          session: AsyncSession = Depends(get_session)):
-    
-    current_user = await repository_users.get_user_by_email(email, session)
+    """
+    # Оновити контакт.
 
-    print("--------->", current_user)
+    Оновлює контакт з вказаним ідентифікатором, якщо користувач з вказаною електронною поштою є власником контакту.
+
+    ## Параметри:
+    - contact_id (int): Ідентифікатор контакту, який потрібно оновити.
+    - contact (ContactCreate): Об'єкт, що містить нові дані для оновлення контакту.
+    - email (str, optional): Електронна пошта користувача.
+    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+
+    ## Повертає:
+    - Contact: Оновлений об'єкт контакту.
+
+    """
+        
+
+    current_user = await repository_users.get_user_by_email(email, session)
     
     existing_contact = await session.get(Contact, contact_id)
 

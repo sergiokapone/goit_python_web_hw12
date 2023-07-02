@@ -4,12 +4,12 @@ from pydantic import BaseModel, EmailStr, Field, validator
 
 
 class ContactBase(BaseModel):
-    first_name: str
-    last_name: str
-    email: str
-    phone_number: str
-    birthday: str
-    additional_data: str = None
+    first_name: str = Field(..., example="Sergiy")
+    last_name: str = Field(..., example="Ponomarenko")
+    email: str = Field(..., example="sergiy.ponomarenko@example.com")
+    phone_number: str = Field(..., example="0632569852")
+    birthday: str = Field(..., example="1978-12-12")
+    additional_data: str = Field(None, example="Physicist")
 
     @validator("birthday")
     def validate_birthday(cls, value):
@@ -30,16 +30,16 @@ class Contact(ContactBase):
 
 
 class UserModel(BaseModel):
-    username: str = Field(min_length=5, max_length=16)
+    username: str = Field(min_length=5, max_length=16, example="sergiokapone")
     email: EmailStr
-    password: str = Field(min_length=6, max_length=10)
+    password: str = Field(min_length=6, max_length=10, example="qwer1234")
 
 class UserDb(BaseModel):
-    id: int
-    username: str
-    email: str
-    created_at: datetime
-    avatar: str
+    id: int = Field(..., example=1)
+    username: str = Field(..., example="sergiokapone")
+    email: str = Field(..., example="sergiy.ponomarenko@example.com")
+    created_at: datetime = Field(..., example=datetime.now())
+    avatar: str = Field(..., example="https://example.com/avatar.jpg")
 
     class Config:
         orm_mode = True
