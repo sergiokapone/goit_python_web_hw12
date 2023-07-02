@@ -19,7 +19,9 @@ passlib = "*"
 python-multipart = "*"
 fastapi-users = "*"
 libgravatar = "*"
-jose = "*"
+pip = "*"
+install = "*"
+python-jose = "*"
 
 [dev-packages]
 
