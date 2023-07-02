@@ -57,8 +57,6 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
 
     """
 
-
-    print("Текст ошибки", body.username)
     user = await repository_users.get_user_by_email(body.username, session)
     print(body.password, user.password)
     if user is None:
@@ -71,7 +69,13 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     access_token = await auth_service.create_access_token(data={"sub": user.email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, session)
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {
+            "user": {
+                "username": "angelka",
+                "email": user.email
+            },
+            "token": access_token
+            }
 
 
 @router.get('/refresh_token', response_model=TokenModel, include_in_schema=False)
@@ -102,7 +106,13 @@ async def refresh_token(
     access_token = await auth_service.create_access_token(data={"sub": email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": email})
     await repository_users.update_token(user, refresh_token, session)
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {
+            "user": {
+                "username": "angelka",
+                "email": email
+            },
+            "token": access_token
+            }
 
 
 

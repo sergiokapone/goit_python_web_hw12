@@ -49,7 +49,6 @@ class Auth:
         Returns:
             bool: True, якщо пароль валідний, False - в іншому випадку.
         """
-        print("string", "-->", self.pwd_context.hash("string"))
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def get_password_hash(self, password: str):
@@ -62,7 +61,6 @@ class Auth:
         Returns:
             str: Хеш паролю.
         """
-        print(password, "<--", self.pwd_context.hash(password))
         return self.pwd_context.hash(password)
 
     async def create_access_token(self, data: dict, 
@@ -105,9 +103,13 @@ class Auth:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
         else:
             expire = datetime.utcnow() + timedelta(days=7)
-        to_encode.update({"iat": datetime.utcnow(), 
-                          "exp": expire, "scope": 
-                          "refresh_token"})
+        to_encode.update(
+                          {
+                            "iat": datetime.utcnow(), 
+                            "exp": expire, 
+                            "scope": "refresh_token"
+                          }
+                          )
         encoded_refresh_token = jwt.encode(to_encode, 
                                            self.SECRET_KEY, 
                                            algorithm=self.ALGORITHM)
@@ -182,7 +184,7 @@ class Auth:
             decoded_token = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
             email = decoded_token.get("sub")
             return email
-        except jwt.JWTDecodeError:
+        except JWTError:
             return None
 
 auth_service = Auth()

@@ -15,9 +15,14 @@ router = APIRouter(tags=["Contacts"])
 
 @router.post("/")
 async def create_contact(contact: ContactCreate, 
+                         access_token: str = Header(...,
+                                description="Введіть токен доступу",
+                                convert_underscores=False),
                          session: AsyncSession = Depends(get_session),
-                         current_user: User = Depends(get_user_by_email)):
-    return await contacts.create_contact(contact, session, current_user)
+                         ):
+    email = auth_service.extract_email_from_token(access_token)
+
+    return await contacts.create_contact(contact, email, session)
 
 @router.get("/")
 async def get_all_contacts(
@@ -31,7 +36,27 @@ async def get_all_contacts(
 
     return await contacts.get_all_contacts(session, email)
 
-@router.get("/{contact_id}")
-async def get_contact(contact_id: int,
+@router.delete("/{contact_id}")
+async def delete_contact(contact_id: int,
+                         access_token: str = Header(...,
+                                description="Введіть токен доступу",
+                                convert_underscores=False),
                       session: AsyncSession = Depends(get_session)):
-    return await contacts.get_contact(contact_id, session)
+    email = auth_service.extract_email_from_token(access_token)
+
+    return await contacts.delete_contact(contact_id, email, session)
+
+
+@router.put("/{contact_id}")
+async def delete_contact(contact_id: int,
+                         contact: ContactCreate,
+                         access_token: str = Header(...,
+                                description="Введіть токен доступу",
+                                convert_underscores=False),
+                      session: AsyncSession = Depends(get_session)):
+    
+    email = auth_service.extract_email_from_token(access_token)
+
+    print("--------->", email)
+
+    return await contacts.update_contact(contact_id, contact, email, session)

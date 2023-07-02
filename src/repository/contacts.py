@@ -12,9 +12,11 @@ from fastapi import status
 from schemas import ContactCreate
 from database.models import Contact
 
-async def create_contact(contact: ContactCreate, 
-                        session: AsyncSession = Depends(get_session), 
-                        email: str = None):
+async def create_contact(
+                contact: ContactCreate, 
+                email: str = None,
+                session: AsyncSession = Depends(get_session)
+                        ):
     
     current_user = await repository_users.get_user_by_email(email, session)
 
@@ -37,24 +39,82 @@ async def create_contact(contact: ContactCreate,
     return new_contact
 
 
-async def get_all_contacts(session: AsyncSession = Depends(get_session),
-                        email: str = None):
+async def get_all_contacts(
+        email: str = None,
+        session: AsyncSession = Depends(get_session)
+        ):
     
     current_user = await repository_users.get_user_by_email(email, session)
 
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Not authenticated")
-
+    
     result = await session.execute(select(Contact).filter(Contact.user_id == current_user.id))
     contacts = result.all()
     return contacts
 
+async def delete_contact(contact_id: int,
+                         email: str = None, 
+                         session: AsyncSession = Depends(get_session)):
+    
+    current_user = await repository_users.get_user_by_email(email, session)
 
-async def get_contact(contact_id: int, 
-                      session: AsyncSession = Depends(get_session)):
-    contact = await session.execute(select(Contact).filter(Contact.id == contact_id))
-    result = contact.scalar_one_or_none()
-    if result is None:
+
+
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Not authenticated")
+
+    contact = await session.get(Contact, contact_id)
+
+    if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
-    return result
+    
+
+    contact = await session.get(Contact, contact_id)
+    
+    if contact.user_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+    
+    await session.delete(contact)
+    await session.commit()
+    return {"message": "Contact deleted", "contact": contact}
+
+
+async def update_contact(contact_id: int,
+                         contact: ContactCreate,
+                         email: str = None, 
+                         session: AsyncSession = Depends(get_session)):
+    
+    current_user = await repository_users.get_user_by_email(email, session)
+
+    print("--------->", current_user)
+    
+    existing_contact = await session.get(Contact, contact_id)
+
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Not authenticated")
+
+
+    if not existing_contact:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+   
+    if  existing_contact.user_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+    
+
+    existing_contact.first_name = contact.first_name
+    existing_contact.last_name = contact.last_name
+    existing_contact.email = contact.email
+    existing_contact.phone_number = contact.phone_number
+    existing_contact.birthday = datetime.strptime(
+        contact.birthday, "%Y-%m-%d"
+    ).date()
+    existing_contact.additional_data = contact.additional_data
+
+    await session.commit()
+    await session.refresh(existing_contact)
+    return existing_contact
