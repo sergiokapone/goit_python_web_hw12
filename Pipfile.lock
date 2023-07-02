@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "db1c20e119b9a1f36619cfe5b175b6cb101f34a1a90a6d6bd6c5d0c1b25fc74d"
+            "sha256": "9ccc17beb4b674c9bf408a57d63dd949c3e3c6462a35f093055de8c951368300"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -262,6 +262,13 @@
             "markers": "python_version >= '3.5'",
             "version": "==3.4"
         },
+        "jose": {
+            "hashes": [
+                "sha256:8436c3617cd94e1ba97828fbb1ce27c129f66c78fb855b4bb47e122b5f345fba"
+            ],
+            "index": "pypi",
+            "version": "==1.0.0"
+        },
         "libgravatar": {
             "hashes": [
                 "sha256:05cf4f8dfefe995d09078cd3d747c8f04dcf17d6004fc7bb542049a55f2238d9",
@@ -437,7 +444,6 @@
             "version": "==2.9.6"
         },
         "pydantic": {
-            "extras": [],
             "hashes": [
                 "sha256:20a3b30fd255eeeb63caa9483502ba96b7795ce5bf895c6a179b3d909d9f53a6",
                 "sha256:2b71bd504d1573b0b722ae536e8ffb796bedeef978979d076bf206e77dcc55a5",
