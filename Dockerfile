@@ -2,6 +2,7 @@
 FROM python:3.10
 
 # Установка pipenv
+RUN pip install --upgrade pip
 RUN pip install pipenv
 
 # Копирование Pipfile и Pipfile.lock
