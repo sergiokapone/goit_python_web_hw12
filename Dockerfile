@@ -10,7 +10,7 @@ WORKDIR /app
 COPY Pipfile* /app/
 
 # Установка зависимостей с помощью pipenv
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pipenv install --system --deploy
 
 # Копирование приложения
 COPY . /app
