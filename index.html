@@ -44,6 +44,21 @@
               },
             }
           );
+          localStorage.setItem("token", response.data.access_token);
+        } catch (error) {
+          console.error(error);
+        }
+
+        try {
+          console.log(localStorage.getItem("token"));
+          const response = await axios.get(
+            "https://fastapi12.onrender.com/users/contacts",
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
           console.log(response.data);
         } catch (error) {
           console.error(error);
