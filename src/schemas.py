@@ -58,3 +58,7 @@ class TokenModel(BaseModel):
 class LoginResponse(BaseModel):
     user: Dict[str, Union[str, str]] = Field(default={"username": "sergiokapone", "email": "user@example.com"})
     access_token: str = Field(...)
+
+class CucrrentUserResponse(BaseModel):
+    username: str = Field(min_length=5, max_length=16, example="sergiokapone")
+    email: EmailStr

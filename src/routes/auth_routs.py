@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredent
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connect import get_session
-from schemas import LoginResponse, UserModel, UserResponse, TokenModel
+from schemas import CucrrentUserResponse, LoginResponse, UserModel, UserResponse, TokenModel
 
 from repository import users as repository_users
 from services.auth import auth_service
@@ -70,13 +70,11 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, session)
 
-    return LoginResponse(
-       LoginResponse(user={"username": user.username, "email": user.email},
+    return LoginResponse(user={"username": user.username, "email": user.email},
                     access_token=access_token)
-                         )
 
 
-@router.get('/refresh_token', response_model=TokenModel, include_in_schema=False)
+@router.get('/refresh_token', response_model=LoginResponse, include_in_schema=False)
 async def refresh_token(
     credentials: HTTPAuthorizationCredentials = Security(security), 
     session: AsyncSession = Depends(get_session)):
@@ -104,17 +102,11 @@ async def refresh_token(
     access_token = await auth_service.create_access_token(data={"sub": email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": email})
     await repository_users.update_token(user, refresh_token, session)
-    return {
-            "user": {
-                "username": "angelka",
-                "email": email
-            },
-            "token": access_token
-            }
+    return LoginResponse(user={"username": user.username, "email": user.email},
+                    access_token=access_token)
 
 
-
-@router.get("/current")
+@router.get("/current", response_model=CucrrentUserResponse)
 async def get_current_user(access_token: str = Header(...,
                                 description="Введіть токен доступу",
                                 convert_underscores=False),
@@ -135,9 +127,9 @@ async def get_current_user(access_token: str = Header(...,
 
     current_user = await auth_service.get_current_user(access_token, session)
 
-    return {"username": current_user.username, 
-            "email": current_user.email
-            }
+    return CucrrentUserResponse(username=current_user.username, 
+        email=current_user.email)
+
 
 @router.post("/logout")
 async def logout_user(access_token: str = Header(...,
