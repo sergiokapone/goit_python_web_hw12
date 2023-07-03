@@ -1,13 +1,10 @@
 
-from datetime import date, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
-from repository.users import get_user_by_email
 from database.connect import get_session
 
 from fastapi import APIRouter, Depends, Header
 
 from schemas import ContactCreate
-from database.models import User
 
 from repository import contacts
 from services.auth import auth_service

@@ -90,4 +90,4 @@ async def update_token(user: User, token: str | None,
 
     """
     user.refresh_token = token
-    session.commit()
+    await session.commit()
