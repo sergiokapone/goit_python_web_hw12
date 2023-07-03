@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import extract, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from repository import users as repository_users
@@ -176,3 +176,61 @@ async def update_contact(contact_id: int,
     await session.commit()
     await session.refresh(existing_contact)
     return existing_contact
+
+
+def is_upcoming_birthday(birthday: date, start_date: date, end_date: date) -> bool:
+    birthday_this_year = start_date.replace(
+        year=start_date.year, month=birthday.month, day=birthday.day
+    )
+
+    if start_date <= birthday_this_year <= end_date:
+        return True
+
+    birthday_next_year = birthday_this_year.replace(year=start_date.year + 1)
+
+    if start_date <= birthday_next_year <= end_date:
+        return True
+
+    return False
+
+
+async def get_upcoming_birthdays(
+    days,
+    email: int = None,
+    session: AsyncSession = Depends(get_session),
+):
+    """
+    Отримати наближені дні народження контактів.
+
+    Параметри:
+    - days (int): Кількість днів для визначення наближених днів народження.
+    - email (int, опціонально): Електронна пошта користувача. Використовується для отримання поточного користувача.
+    - session (AsyncSession, опціонально): Об'єкт сесії бази даних.
+
+    Повертає:
+    - результати (ResultProxy): Об'єкт, що містить результати запиту до бази даних.
+
+    Викидає:
+    - HTTPException: Якщо користувач не автентифікований.
+    """
+
+    current_user = await repository_users.get_user_by_email(email, session)
+    
+    if not current_user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Not authenticated")
+    
+    today = date.today()
+    end_date = today + timedelta(days=days)
+    results = await session.execute(
+                select(Contact)
+                .filter(
+                    Contact.user_id == current_user.id,
+                    extract('month', Contact.birthday) == today.month,
+                    extract('day', Contact.birthday).between(today.day, end_date.day)
+                )
+                .order_by(Contact.birthday)
+            )
+
+
+    return [dict(row) for row in results]

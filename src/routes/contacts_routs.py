@@ -1,4 +1,5 @@
 
+from datetime import date, timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
 from repository.users import get_user_by_email
 from database.connect import get_session
@@ -120,3 +121,31 @@ async def delete_contact(contact_id: int,
     email = auth_service.extract_email_from_token(access_token)
 
     return await contacts.update_contact(contact_id, contact, email, session)
+
+@router.get("/birthdays/{days}")
+async def get_upcoming_birthdays(
+    days: int,
+    access_token: str = Header(...,
+                                description="Введіть токен доступу",
+                                convert_underscores=False),
+    session: AsyncSession = Depends(get_session),
+):
+    
+    """
+    # Отримати наближені дні народження контактів.
+
+    ## Параметри:
+    - days (int): Кількість днів для визначення наближених днів народження.
+    - access_token (str, заголовок): Токен доступу для аутентифікації користувача.
+    - session (AsyncSession, опціонально): Об'єкт сесії бази даних.
+
+    ## Повертає:
+    - результати (ResultProxy): Об'єкт, що містить результати запиту до бази даних.
+
+    ## Raise:
+    - HTTPException: Якщо користувач не автентифікований.
+    """
+    
+    email = auth_service.extract_email_from_token(access_token)
+
+    return await contacts.get_upcoming_birthdays(days, email, session)
