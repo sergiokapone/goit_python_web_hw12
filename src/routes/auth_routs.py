@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, Header, status, Security
+from fastapi import APIRouter, HTTPException, Depends, Response, status, Security
 from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connect import get_session
-from schemas import CucrrentUserResponse, LoginResponse, UserModel, UserResponse, TokenModel
+from database.models import User
+from schemas import CucrrentUserResponse, LoginResponse, UserModel, UserResponse
 
 from repository import users as repository_users
 from services.auth import auth_service
@@ -70,8 +71,10 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, session)
 
-    return LoginResponse(user={"username": user.username, "email": user.email},
-                    access_token=access_token)
+    return LoginResponse(user={"username": user.username, 
+                        "email": user.email},
+                        access_token=access_token,
+                        refresh_token=refresh_token)
 
 
 @router.get('/refresh_token', response_model=LoginResponse, include_in_schema=False)
@@ -105,38 +108,40 @@ async def refresh_token(
     return LoginResponse(user={"username": user.username, "email": user.email},
                     access_token=access_token)
 
-
 @router.get("/current", response_model=CucrrentUserResponse)
-async def get_current_user(access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
-                                session: AsyncSession = Depends(get_session)
-                                ):
+async def get_current_user(
+    current_user: User = Depends(auth_service.get_current_user)
+):
     """
     # Отримати поточного користувача.
 
     Отримує поточного користувача за допомогою токена доступу і об'єкта сеансу, повертає ім'я користувача та електронну пошту.
 
     ## Параметри:
-    - access_token (str): Токен доступу користувача.
-    - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
+    - current_user (User): Об'єкт поточного користувача.
 
     ## Повертає:
     - dict: Результат з поточним користувачем у вигляді словника з ім'ям користувача та електронною поштою.
     """
 
-    current_user = await auth_service.get_current_user(access_token, session)
-
-    return CucrrentUserResponse(username=current_user.username, 
+    return CucrrentUserResponse(
+        username=current_user.username,
         email=current_user.email)
 
 
-@router.post("/logout")
-async def logout_user(access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
-                      session: AsyncSession = Depends(get_session)):
-    
-    session.close()
 
-    return {"message": "User logged out successfully"}
+
+@router.get("/logout")
+async def logout(response: Response, 
+                 current_user: User = Depends(auth_service.get_current_user),
+                 session: AsyncSession = Depends(get_session)
+                 ):
+
+    # Видалення токена із заголовка запиту
+    response.headers["Authorization"] = ""
+
+    # Закрытие сессии базы данных
+    await session.close()
+
+    return {"message": f"Logged out: {current_user.username}"}
+

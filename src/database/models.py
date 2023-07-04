@@ -15,7 +15,9 @@ class Contact(Base):
     phone_number = Column(String, nullable=False)
     birthday = Column(Date, nullable=False)
     additional_data = Column(String, nullable=True)
-    user_id = Column(Integer, ForeignKey('users.id'))  # Add foreign key column
+    user_id = Column(Integer, ForeignKey('users.id')) 
+    user = relationship('User', back_populates="contacts")
+
 
 class User(Base):
     __tablename__ = "users"
@@ -26,4 +28,5 @@ class User(Base):
     created_at = Column(DateTime, default=func.now(), nullable=True)  
     avatar = Column(String(255), nullable=True)
     refresh_token = Column(String(255), nullable=True)
-    contacts = relationship('Contact', backref='user')  # Define the relationship backref
+    contacts = relationship('Contact', back_populates="user")
+ 

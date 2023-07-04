@@ -1,20 +1,20 @@
 from datetime import date, datetime, timedelta
 
-from sqlalchemy import extract, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from repository import users as repository_users
-from database.connect import get_session
-
 from fastapi import Depends, HTTPException
 from fastapi import status
 
+from sqlalchemy import extract, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.connect import get_session
+from database.models import Contact, User
+
+
 from schemas import ContactCreate
-from database.models import Contact
 
 async def create_contact(
                 contact: ContactCreate, 
-                email: str = None,
+                user: User,
                 session: AsyncSession = Depends(get_session)
                         ):
     
@@ -32,9 +32,8 @@ async def create_contact(
     Створює новий контакт з наданими даними. Використовує електронну пошту користувача для зв'язку з власником контакту.
     """
         
-    current_user = await repository_users.get_user_by_email(email, session)
 
-    if not current_user:
+    if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
 
     new_contact = Contact(
@@ -44,7 +43,7 @@ async def create_contact(
         phone_number=contact.phone_number,
         birthday=datetime.strptime(contact.birthday, "%Y-%m-%d").date(),
         additional_data=contact.additional_data,
-        user_id=current_user.id
+        user=user
     )
     session.add(new_contact)
     await session.flush()
@@ -54,81 +53,65 @@ async def create_contact(
 
 
 async def get_all_contacts(
-        email: str = None,
-        session: AsyncSession = Depends(get_session)
-        ):
-    
+    user: User,
+    session: AsyncSession
+):
     """
-    # Отримати всі контакти.
+    Отримати всі контакти.
 
     Отримує всі контакти, які належать користувачу з вказаною електронною поштою.
 
-    ## Параметри:
-    - email (str, optional): Електронна пошта користувача.
+    Параметри:
+    - current_user (User): Об'єкт поточного користувача.
     - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
 
-    ## Повертає:
+    Повертає:
     - List[Contact]: Список контактів.
-
     """
-        
-    current_user = await repository_users.get_user_by_email(email, session)
-
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Not authenticated")
-    
-    result = await session.execute(select(Contact).filter(Contact.user_id == current_user.id))
+    result = await session.execute(
+         select(Contact).filter(
+         Contact.user_id == user.id)
+         )
     contacts = result.all()
     return contacts
 
 
-async def delete_contact(contact_id: int,
-                         email: str = None, 
-                         session: AsyncSession = Depends(get_session)):
-
+async def delete_contact(
+    contact_id: int,
+    user: User,
+    session: AsyncSession = Depends(get_session)
+):
     """
     # Видалити контакт.
 
     Видаляє контакт з вказаним ідентифікатором, якщо користувач з вказаною електронною поштою є власником контакту.
 
-    ## Параметри:
+    Параметри:
     - contact_id (int): Ідентифікатор контакту, який потрібно видалити.
-    - email (str, optional): Електронна пошта користувача.
+    - current_user (User): Об'єкт поточного користувача.
     - session (AsyncSession): Об'єкт сеансу для з'єднання з базою даних.
 
-    ## Повертає:
+    Повертає:
     - dict: Результат видалення контакту у вигляді словника з повідомленням та видаленим контактом.
-
     """
-
-    current_user = await repository_users.get_user_by_email(email, session)
-
-
-
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Not authenticated")
 
     contact = await session.get(Contact, contact_id)
 
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
-    
 
-    contact = await session.get(Contact, contact_id)
-    
-    if contact.user_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
-    
+    if contact.user_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+
     await session.delete(contact)
     await session.commit()
     return {"message": "Contact deleted", "contact": contact}
 
 
+
 async def update_contact(contact_id: int,
                          contact: ContactCreate,
-                         email: str = None, 
+                         user: User, 
                          session: AsyncSession = Depends(get_session)):
     """
     # Оновити контакт.
@@ -147,21 +130,21 @@ async def update_contact(contact_id: int,
     """
         
 
-    current_user = await repository_users.get_user_by_email(email, session)
-    
-    existing_contact = await session.get(Contact, contact_id)
-
-    if not current_user:
+        
+    if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Not authenticated")
+    
 
+    existing_contact = await session.get(Contact, contact_id)
 
     if not existing_contact:
         raise HTTPException(status_code=404, detail="Contact not found")
     
    
-    if  existing_contact.user_id != current_user.id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+    if existing_contact.user_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
+
     
 
     existing_contact.first_name = contact.first_name
@@ -196,7 +179,7 @@ def is_upcoming_birthday(birthday: date, start_date: date, end_date: date) -> bo
 
 async def get_upcoming_birthdays(
     days,
-    email: int = None,
+    user: User,
     session: AsyncSession = Depends(get_session),
 ):
     """
@@ -214,9 +197,9 @@ async def get_upcoming_birthdays(
     - HTTPException: Якщо користувач не автентифікований.
     """
 
-    current_user = await repository_users.get_user_by_email(email, session)
+
     
-    if not current_user:
+    if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Not authenticated")
     
@@ -225,7 +208,7 @@ async def get_upcoming_birthdays(
     results = await session.execute(
                 select(Contact)
                 .filter(
-                    Contact.user_id == current_user.id,
+                    Contact.user_id == user.id,
                     extract('month', Contact.birthday) == today.month,
                     extract('day', Contact.birthday).between(today.day, end_date.day)
                 )

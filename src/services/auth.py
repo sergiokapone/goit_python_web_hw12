@@ -36,7 +36,7 @@ class Auth:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
     SECRET_KEY = "secret_key"
     ALGORITHM = "HS256"
-    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
     def verify_password(self, plain_password, hashed_password):
         """

@@ -1,8 +1,10 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from database.connect import get_session
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, status
+
+from database.connect import get_session
+from database.models import User
 
 from schemas import ContactCreate
 
@@ -11,11 +13,9 @@ from services.auth import auth_service
 
 router = APIRouter(tags=["Contacts"])
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_contact(contact: ContactCreate, 
-                         access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
+                         current_user: User = Depends(auth_service.get_current_user),
                          session: AsyncSession = Depends(get_session),
                          ):
     
@@ -34,15 +34,11 @@ async def create_contact(contact: ContactCreate,
 
     """
         
-    email = auth_service.extract_email_from_token(access_token)
-
-    return await contacts.create_contact(contact, email, session)
+    return await contacts.create_contact(contact, current_user, session)
 
 @router.get("/")
 async def get_all_contacts(
-    access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
+    current_user: User = Depends(auth_service.get_current_user),
     session: AsyncSession = Depends(get_session),
                             ):
     """
@@ -59,15 +55,12 @@ async def get_all_contacts(
 
     """
     
-    email = auth_service.extract_email_from_token(access_token)
 
-    return await contacts.get_all_contacts(email, session)
+    return await contacts.get_all_contacts(current_user, session)
 
 @router.delete("/{contact_id}")
 async def delete_contact(contact_id: int,
-                         access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
+                         current_user: User = Depends(auth_service.get_current_user),
                       session: AsyncSession = Depends(get_session)):
     
     """
@@ -86,17 +79,14 @@ async def delete_contact(contact_id: int,
     """
 
 
-    email = auth_service.extract_email_from_token(access_token)
 
-    return await contacts.delete_contact(contact_id, email, session)
+    return await contacts.delete_contact(contact_id, current_user, session)
 
 
 @router.put("/{contact_id}")
 async def delete_contact(contact_id: int,
                          contact: ContactCreate,
-                         access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
+                         current_user: User = Depends(auth_service.get_current_user),
                       session: AsyncSession = Depends(get_session)):
     
     """
@@ -115,16 +105,13 @@ async def delete_contact(contact_id: int,
     """
         
     
-    email = auth_service.extract_email_from_token(access_token)
 
-    return await contacts.update_contact(contact_id, contact, email, session)
+    return await contacts.update_contact(contact_id, contact, current_user, session)
 
 @router.get("/birthdays/{days}")
 async def get_upcoming_birthdays(
     days: int,
-    access_token: str = Header(...,
-                                description="Введіть токен доступу",
-                                convert_underscores=False),
+    current_user: User = Depends(auth_service.get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
     
@@ -143,6 +130,5 @@ async def get_upcoming_birthdays(
     - HTTPException: Якщо користувач не автентифікований.
     """
     
-    email = auth_service.extract_email_from_token(access_token)
 
-    return await contacts.get_upcoming_birthdays(days, email, session)
+    return await contacts.get_upcoming_birthdays(days, current_user, session)
