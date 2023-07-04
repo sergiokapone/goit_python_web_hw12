@@ -18,6 +18,23 @@
     </form>
 
     <script>
+      const api = axios.create({
+        baseURL: "https://fastapi12.onrender.com",
+      });
+
+      api.interceptors.request.use(
+        (config) => {
+          const token = localStorage.getItem("token");
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        }
+      );
+
       const form = document.getElementById("loginForm");
 
       form.addEventListener("submit", async function (event) {
@@ -35,15 +52,11 @@
         formData.append("client_secret", "client_secret");
 
         try {
-          const response = await axios.post(
-            "https://fastapi12.onrender.com/users/login",
-            formData,
-            {
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-            }
-          );
+          const response = await api.post("/users/login", formData, {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          });
           localStorage.setItem("token", response.data.access_token);
         } catch (error) {
           console.error(error);
@@ -51,14 +64,7 @@
 
         try {
           console.log(localStorage.getItem("token"));
-          const response = await axios.get(
-            "https://fastapi12.onrender.com/users/contacts",
-            {
-              headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-              },
-            }
-          );
+          const response = await api.get("/contacts/");
           console.log(response.data);
         } catch (error) {
           console.error(error);
