@@ -74,11 +74,12 @@ async def get_all_contacts(
     Повертає:
     - List[Contact]: Список контактів.
     """
-    result = await session.execute(
+    results = await session.execute(
          select(Contact).filter(
          Contact.user_id == user.id)
          )
-    contacts = result.all()
+    
+    contacts = results.scalars().all()
     return contacts
 
 
