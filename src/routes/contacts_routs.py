@@ -79,7 +79,7 @@ async def delete_contact(contact_id: int,
 
 
 
-    return await contacts.update_contact(contact_id, current_user, session)
+    return await contacts.delete_contact(contact_id, current_user, session)
 
 
 @router.put("/{contact_id}")
