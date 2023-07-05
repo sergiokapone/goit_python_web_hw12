@@ -1,4 +1,3 @@
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi import APIRouter, Depends, status
@@ -80,11 +79,11 @@ async def delete_contact(contact_id: int,
 
 
 
-    return await contacts.delete_contact(contact_id, current_user, session)
+    return await contacts.update_contact(contact_id, current_user, session)
 
 
 @router.put("/{contact_id}")
-async def delete_contact(contact_id: int,
+async def update_contact(contact_id: int,
                          contact: ContactCreate,
                          current_user: User = Depends(auth_service.get_current_user),
                       session: AsyncSession = Depends(get_session)):

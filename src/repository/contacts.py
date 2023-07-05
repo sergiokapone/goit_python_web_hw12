@@ -1,10 +1,12 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 from fastapi import Depends, HTTPException
 from fastapi import status
 
-from sqlalchemy import extract, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
+
 
 from database.connect import get_session
 from database.models import Contact, User
@@ -36,20 +38,24 @@ async def create_contact(
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
 
-    new_contact = Contact(
-        first_name=contact.first_name,
-        last_name=contact.last_name,
-        email=contact.email,
-        phone_number=contact.phone_number,
-        birthday=datetime.strptime(contact.birthday, "%Y-%m-%d").date(),
-        additional_data=contact.additional_data,
-        user=user
-    )
-    session.add(new_contact)
-    await session.flush()
-    await session.refresh(new_contact)
-    await session.commit()
-    return new_contact
+    try:
+        new_contact = Contact(
+            first_name=contact.first_name,
+            last_name=contact.last_name,
+            email=contact.email,
+            phone_number=contact.phone_number,
+            birthday=datetime.strptime(contact.birthday, "%Y-%m-%d").date(),
+            additional_data=contact.additional_data,
+            user=user
+        )
+        session.add(new_contact)
+        await session.flush()
+        await session.refresh(new_contact)
+        await session.commit()
+        return new_contact
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Contact with the same email already exists")
 
 
 async def get_all_contacts(
@@ -178,7 +184,7 @@ def is_upcoming_birthday(birthday: date, start_date: date, end_date: date) -> bo
 
 
 async def get_upcoming_birthdays(
-    days,
+    days: int,
     user: User,
     session: AsyncSession = Depends(get_session),
 ):
@@ -187,33 +193,37 @@ async def get_upcoming_birthdays(
 
     Параметри:
     - days (int): Кількість днів для визначення наближених днів народження.
-    - email (int, опціонально): Електронна пошта користувача. Використовується для отримання поточного користувача.
+    - user (User): Об'єкт користувача.
     - session (AsyncSession, опціонально): Об'єкт сесії бази даних.
 
     Повертає:
-    - результати (ResultProxy): Об'єкт, що містить результати запиту до бази даних.
+    - результати (List[dict]): Список результатів запиту до бази даних.
 
     Викидає:
     - HTTPException: Якщо користувач не автентифікований.
     """
 
-
-    
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Not authenticated")
-    
-    today = date.today()
-    end_date = today + timedelta(days=days)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+
+    today = datetime.now().date()
+
+    upcoming_birthdays = []
     results = await session.execute(
-                select(Contact)
-                .filter(
-                    Contact.user_id == user.id,
-                    extract('month', Contact.birthday) == today.month,
-                    extract('day', Contact.birthday).between(today.day, end_date.day)
-                )
-                .order_by(Contact.birthday)
-            )
+        select(Contact)
+        .filter(Contact.user_id == user.id)
+    )
+    contacts = results.scalars().all()
 
+    for contact in contacts:
+        birthday = contact.birthday
+        next_birthday = datetime(today.year, birthday.month, birthday.day).date()
 
-    return [dict(row) for row in results]
+        if next_birthday < today:
+            next_birthday = datetime(today.year + 1, birthday.month, birthday.day).date()
+
+        days_until_birthday = (next_birthday - today).days
+        if days_until_birthday <= days:
+            upcoming_birthdays.append(contact)
+
+    return upcoming_birthdays
