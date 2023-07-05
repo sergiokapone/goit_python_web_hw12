@@ -152,18 +152,22 @@ async def update_contact(contact_id: int,
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
     
+    try:
+        existing_contact.first_name = contact.first_name
+        existing_contact.last_name = contact.last_name
+        existing_contact.email = contact.email
+        existing_contact.phone_number = contact.phone_number
+        existing_contact.birthday = datetime.strptime(
+            contact.birthday, "%Y-%m-%d"
+        ).date()
+        existing_contact.additional_data = contact.additional_data
 
-    existing_contact.first_name = contact.first_name
-    existing_contact.last_name = contact.last_name
-    existing_contact.email = contact.email
-    existing_contact.phone_number = contact.phone_number
-    existing_contact.birthday = datetime.strptime(
-        contact.birthday, "%Y-%m-%d"
-    ).date()
-    existing_contact.additional_data = contact.additional_data
+        await session.commit()
+        await session.refresh(existing_contact)
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Contact with the same email already exists")
 
-    await session.commit()
-    await session.refresh(existing_contact)
     return existing_contact
 
 
