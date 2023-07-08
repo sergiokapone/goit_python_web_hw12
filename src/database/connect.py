@@ -1,23 +1,13 @@
 
-import pathlib
+
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from environs import Env
-
-file_env = pathlib.Path(__file__).parent.joinpath(".env")
-# config = configparser.ConfigParser()
-# config.read(file_config)
+from conf.config import settings
 
 
-
-
-env = Env()
-env.read_env(file_env)
-
-SQLALCHEMY_DATABASE_URL = env.str("BASE_URL")
-
+SQLALCHEMY_DATABASE_URL = settings.sqlalchemy_database_url
 
 engine = create_async_engine(
     SQLALCHEMY_DATABASE_URL,

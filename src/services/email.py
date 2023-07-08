@@ -1,30 +1,20 @@
 from pathlib import Path
-import pathlib
 
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
 
-from environs import Env
 
 from services.auth import auth_service
-
-file_env = pathlib.Path(__file__).parent.parent.parent.joinpath(".env")
-env = Env()
-env.read_env(file_env)
-
-MAIL_USERNAME = env.str("MAIL_USERNAME")
-MAIL_PASSWORD = env.str("MAIL_PASSWORD")
-MAIL_SERVER = env.str("MAIL_SERVER")
-MAIL_FROM_NAME = env.str("MAIL_FROM_NAME")
+from conf.config import settings
 
 conf = ConnectionConfig(
-    MAIL_USERNAME=MAIL_USERNAME,
-    MAIL_PASSWORD=MAIL_PASSWORD,
-    MAIL_FROM=EmailStr(MAIL_USERNAME),
-    MAIL_PORT=465,
-    MAIL_SERVER=MAIL_SERVER,
-    MAIL_FROM_NAME=MAIL_FROM_NAME,
+    MAIL_USERNAME=settings.mail_username,
+    MAIL_PASSWORD=settings.mail_password,
+    MAIL_FROM=EmailStr(settings.mail_username),
+    MAIL_PORT=settings.mail_port,
+    MAIL_SERVER=settings.mail_server,
+    MAIL_FROM_NAME=settings.mail_from,
     MAIL_STARTTLS=False,
     MAIL_SSL_TLS=True,
     USE_CREDENTIALS=True,
