@@ -22,6 +22,8 @@ libgravatar = "*"
 pip = "*"
 install = "*"
 python-jose = "*"
+fastapi-mail = "*"
+environs = "*"
 
 [dev-packages]
 

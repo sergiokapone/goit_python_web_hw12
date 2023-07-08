@@ -62,3 +62,7 @@ class LoginResponse(BaseModel):
 class CucrrentUserResponse(BaseModel):
     username: str = Field(min_length=5, max_length=16, example="sergiokapone")
     email: EmailStr
+
+
+class RequestEmail(BaseModel):
+    email: EmailStr

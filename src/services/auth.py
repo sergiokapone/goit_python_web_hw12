@@ -1,5 +1,8 @@
+import pathlib
 from typing import Optional
 from passlib.context import CryptContext
+
+from environs import Env
 
 from jose import JWTError, jwt
 
@@ -13,7 +16,9 @@ from datetime import datetime, timedelta
 from database.connect import get_session
 from repository import users as repository_users
 
-
+file_env = pathlib.Path(__file__).parent.joinpath(".env")
+env = Env()
+env.read_env(file_env)
 class Auth:
     """
     Клас, що надає функціонал автентифікації та генерації токенів.
@@ -34,8 +39,9 @@ class Auth:
     """
 
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    SECRET_KEY = "secret_key"
-    ALGORITHM = "HS256"
+
+    SECRET_KEY = env.str("SECRET_KEY")
+    ALGORITHM = env.str("ALGORITHM")
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
     def verify_password(self, plain_password, hashed_password):
@@ -187,4 +193,24 @@ class Auth:
         except JWTError:
             return None
 
+    def create_email_token(self, data: dict):
+        to_encode = data.copy()
+        expire = datetime.utcnow() + timedelta(days=7)
+        to_encode.update({"iat": datetime.utcnow(),
+                          "exp": expire})
+        token = jwt.encode(to_encode, 
+                           self.SECRET_KEY, 
+                           algorithm=self.ALGORITHM)
+        return token
+
+    async def get_email_from_token(self, token: str):
+        try:
+            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+            email = payload["sub"]
+            return email
+        except JWTError as e:
+            print(e)
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                                detail="Invalid token for email verification")
+    
 auth_service = Auth()

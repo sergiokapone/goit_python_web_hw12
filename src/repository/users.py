@@ -91,3 +91,11 @@ async def update_token(user: User, token: str | None,
     """
     user.refresh_token = token
     await session.commit()
+
+
+async def confirmed_email(email: str, 
+                          session: AsyncSession = Depends(get_session)) -> None:
+    user = await get_user_by_email(email, session)
+    print(user)
+    user.confirmed = True
+    await session.commit()
