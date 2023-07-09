@@ -66,3 +66,6 @@ class CucrrentUserResponse(BaseModel):
 
 class RequestEmail(BaseModel):
     email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    new_password: str

@@ -33,4 +33,5 @@ class User(Base):
     refresh_token = Column(String(255), nullable=True)
     confirmed = Column(Boolean, default = False) 
     contacts = relationship('Contact', back_populates="user")
+    reset_token = Column(String(255), nullable=True) 
  

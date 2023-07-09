@@ -99,3 +99,41 @@ async def confirmed_email(email: str,
     print(user)
     user.confirmed = True
     await session.commit()
+
+
+async def save_reset_token(user: User, reset_token: str, 
+                           session: AsyncSession = Depends(get_session)) -> None:
+    """
+    Зберігає токен скидання пароля користувача.
+
+    Parameters:
+        user (User): Об'єкт користувача.
+        reset_token (str): Токен скидання пароля.
+        session (AsyncSession): Об'єкт сесії бази даних.
+
+    """
+    user.reset_token = reset_token
+    await session.commit()
+
+
+async def get_user_by_reset_token(reset_token: str, 
+                                  session: AsyncSession = Depends(get_session)) -> User | None:
+    """
+    Отримує об'єкт користувача за токеном скидання пароля.
+
+    Parameters:
+        reset_token (str): Токен скидання пароля.
+        session (AsyncSession): Об'єкт сесії бази даних.
+
+    Returns:
+        User: Об'єкт користувача, якщо знайдено, або None, якщо не знайдено.
+
+    """
+    try:
+        result = await session.\
+            execute(select(User).\
+                    filter(User.reset_token == reset_token))
+        user = result.scalar_one_or_none()
+        return user
+    except NoResultFound:
+        return None

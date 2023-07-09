@@ -1,7 +1,9 @@
+import secrets
 from fastapi import APIRouter, HTTPException, Depends, Response, status, Security, BackgroundTasks, Request
 
 
 from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import EmailStr
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +13,8 @@ from schemas import CucrrentUserResponse, LoginResponse, RequestEmail, UserModel
 
 from repository import users as repository_users
 from services.auth import auth_service
-from services.email import send_email
+from services.email import send_email, reset_password_by_email
+
 
 router = APIRouter(tags=["User"])
 security = HTTPBearer()
@@ -24,19 +27,22 @@ async def signup(body: UserModel,
                  request: Request,
                  session: AsyncSession = Depends(get_session)):
     """
-    # Створює нового користувача.
+    Створює нового користувача.
 
-    ## Параметри:
+    Параметри:
     - body (UserModel): Модель користувача, що містить дані для створення користувача.
+    - background_tasks (BackgroundTasks): Об'єкт для виконання фонових задач асинхронно.
+    - request (Request): Об'єкт запиту FastAPI.
     - session (AsyncSession): Об'єкт сесії бази даних.
 
-    ## Повертає:
-    - UserResponse: Об'єкт відповіді, який містить створеного користувача та повідомлення про успішне створення.
+    Повертає:
+    - UserResponse: Об'єкт відповіді, який містить створеного користувача та
+      повідомлення про успішне створення.
 
-    ## Raises:
+    Викликає:
     - HTTPException: Якщо обліковий запис вже існує.
-
     """
+
     exist_user = await repository_users.get_user_by_email(body.email, session)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
@@ -185,3 +191,49 @@ async def request_email(body: RequestEmail,
     if user:
         background_tasks.add_task(send_email, user.email, user.username, request.base_url)
     return {"message": "Check your email for confirmation."}
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    email: EmailStr, 
+    background_tasks: BackgroundTasks,
+    request: Request,  
+    session: AsyncSession = Depends(get_session)
+):
+    user = await repository_users.get_user_by_email(email, session)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    # Генеруємо токен скидання паролю
+    reset_token = secrets.token_hex(16)
+
+    # Зберігаємо токен скидання паролю у базу даних для подальшої перевірки 
+    await repository_users.save_reset_token(user, reset_token, session)
+
+    background_tasks.add_task(reset_password_by_email, 
+                              email, 
+                              user.username,
+                              reset_token,
+                              request.base_url)
+
+    return {"message": "Password reset initiated"}
+
+@router.post("/reset-password")
+async def reset_password(
+    reset_token: str, 
+    new_password: str,
+    session: AsyncSession = Depends(get_session)
+    ):
+
+    user = await repository_users.get_user_by_reset_token(reset_token, session)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="Invalid reset token")
+
+    # Оновлюємо пароль користувача
+    user.password = auth_service.get_password_hash(new_password)
+    user.reset_token = None
+
+    await session.commit()
+
+    return {"message": "Password reset successfully"}
