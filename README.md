@@ -17,7 +17,7 @@
 - Склонируйте репозиторий:
 
   ```shell
-  git clone https://github.com/sergiokapone/goit_python_web_hw11.git
+  git clone https://github.com/sergiokapone/goit_python_web_hw12.git
   ```
 
 - Для встановлення залежностей використайте команду `pipenv install` або `pipenv sync`.
