@@ -25,6 +25,7 @@ python-jose = "*"
 fastapi-mail = "*"
 environs = "*"
 cloudinary = "*"
+redis = "*"
 
 [dev-packages]
 

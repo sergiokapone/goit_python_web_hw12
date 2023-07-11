@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     cloudinary_name: str
     cloudinary_api_key: str
     cloudinary_api_secret: str
-    # redis_host: str = 'localhost'
-    # redis_port: int = 6379
+    redis_host: str = 'localhost'
+    redis_port: int = 6379
 
     class Config:
         env_file = file_env
