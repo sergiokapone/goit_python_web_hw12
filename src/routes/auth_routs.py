@@ -149,6 +149,20 @@ async def logout(response: Response,
                  current_user: User = Depends(auth_service.get_current_user),
                  session: AsyncSession = Depends(get_session)
                  ):
+    """
+    # Вихід користувача з видаленням токена доступу та закриття сесії бази даних.
+
+    ## Параметри:
+
+    - `response` (Response): Об'єкт відповіді HTTP.
+    - `current_user` (User): Поточний користувач, отриманий залежностями.
+    - `session` (AsyncSession): Об'єкт сесії бази даних.
+
+    ## Повертає:
+
+    - Словник з повідомленням про вихід з системи: `{"message": "Logged out: {username}"}`.
+
+    """
 
     # Видалення токена із заголовка запиту
     response.headers["Authorization"] = ""
@@ -162,6 +176,24 @@ async def logout(response: Response,
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, 
                           session: AsyncSession = Depends(get_session)):
+    """
+    # Підтвердження електронної пошти за допомогою токена.
+
+    ## Параметри:
+
+    - `token` (str): Токен підтвердження електронної пошти.
+    - `session` (AsyncSession): Об'єкт сесії бази даних.
+
+    ## Повертає:
+
+    - Словник з повідомленням про підтвердження електронної пошти: `{"message": "Email confirmed"}`.
+
+    **Виключення:**
+
+    - `HTTPException`: Якщо сталася помилка під час підтвердження електронної пошти.
+
+    """
+
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, session)
     if user is None:
@@ -172,11 +204,29 @@ async def confirmed_email(token: str,
     await repository_users.confirmed_email(email, session)
     return {"message": "Email confirmed"}
 
+
 @router.post('/request_email')
 async def request_email(body: RequestEmail, 
                         background_tasks: BackgroundTasks, 
                         request: Request,
                         session: AsyncSession = Depends(get_session)):
+    
+    """
+    # Надсилає запит на підтвердження електронної пошти.
+
+    ## Параметри:
+
+    - `body` (RequestEmail): Об'єкт, що містить дані запиту електронної пошти.
+    - `background_tasks` (BackgroundTasks): Об'єкт фонових задач FastAPI.
+    - `request` (Request): Об'єкт запиту HTTP.
+    - `session` (AsyncSession): Об'єкт сесії бази даних.
+
+    ## Повертає:
+
+    - Словник з повідомленням про надіслання запиту на підтвердження електронної пошти: `{"message": "Check your email for confirmation."}`.
+
+    """
+
     user = await repository_users.get_user_by_email(body.email, session)
 
     if user.confirmed:
@@ -217,6 +267,26 @@ async def reset_password(
     new_password: str,
     session: AsyncSession = Depends(get_session)
     ):
+    """
+    # Ініціює скидання пароля для користувача за допомогою електронної пошти.
+
+    ## Параметри:
+
+    - `email` (EmailStr): Електронна пошта користувача.
+    - `background_tasks` (BackgroundTasks): Об'єкт фонових задач FastAPI.
+    - `request` (Request): Об'єкт запиту HTTP.
+    - `session` (AsyncSession): Об'єкт сесії бази даних.
+
+    ## Повертає:
+
+    - Словник з повідомленням про ініціювання скидання пароля: 
+    `{"message": "Password reset initiated"}`.
+
+    ## Виключення:
+
+    - `HTTPException`: Якщо користувач не знайдений у базі даних.
+
+    """
 
     user = await repository_users.get_user_by_reset_token(reset_token, session)
     if user is None:
@@ -236,6 +306,33 @@ async def reset_password(
 async def update_avatar_user(file: UploadFile = File(), 
                              current_user: User = Depends(auth_service.get_current_user),
                              session: AsyncSession = Depends(get_session)):
+    """
+    # Додає/Оновлює аватар користувача за допомогою завантаженого файлу.
+
+    ## Параметри:
+
+    - `file` (UploadFile): Об'єкт завантаженого файлу з аватаром.
+    - `current_user` (User): Поточний користувач, отриманий залежностями.
+    - `session` (AsyncSession): Об'єкт сесії бази даних.
+
+    ## Повертає:
+
+    - Об'єкт 
+
+    ```json
+    {
+        "id": 1,
+        "username": "sergiokapone",
+        "email": "user@example.com",
+        "created_at": "2023-07-11T10:30:00.000Z",
+        "avatar": "https://example.com/avatar.jpg"
+    }
+    
+    ```
+    з оновленими даними користувача.
+
+    """
+
     cloudinary.config(
         cloud_name=settings.cloudinary_name,
         api_key=settings.cloudinary_api_key,
