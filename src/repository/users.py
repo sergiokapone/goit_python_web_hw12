@@ -137,3 +137,12 @@ async def get_user_by_reset_token(reset_token: str,
         return user
     except NoResultFound:
         return None
+    
+    
+async def update_avatar(email, 
+                        url: str, 
+                        session: AsyncSession = Depends(get_session)) -> User:
+    user = await get_user_by_email(email, session)
+    user.avatar = url
+    await session.commit()
+    return user

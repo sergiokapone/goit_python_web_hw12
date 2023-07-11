@@ -1,5 +1,5 @@
 import secrets
-from fastapi import APIRouter, HTTPException, Depends, Response, status, Security, BackgroundTasks, Request
+from fastapi import APIRouter, HTTPException, Depends, Response, status, Security, BackgroundTasks, Request, UploadFile, File
 
 
 from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
@@ -9,11 +9,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connect import get_session
 from database.models import User
-from schemas import CucrrentUserResponse, LoginResponse, RequestEmail, UserModel, UserResponse
+from schemas import LoginResponse, RequestEmail, UserDb, UserModel, UserResponse
 
 from repository import users as repository_users
 from services.auth import auth_service
 from services.email import send_email, reset_password_by_email
+
+import cloudinary
+import cloudinary.uploader
+
+from conf.config import settings
+
 
 
 router = APIRouter(tags=["User"])
@@ -91,8 +97,10 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
     await repository_users.update_token(user, refresh_token, session)
 
-    return LoginResponse(user={"username": user.username, 
-                        "email": user.email},
+    return LoginResponse(user={
+                            "username": user.username, 
+                            "email": user.email,
+                            "avatar": user.avatar},
                         access_token=access_token,
                         refresh_token=refresh_token)
 
@@ -128,27 +136,12 @@ async def refresh_token(
     return LoginResponse(user={"username": user.username, "email": user.email},
                     access_token=access_token)
 
-@router.get("/current", response_model=CucrrentUserResponse)
-async def get_current_user(
+@router.get("/current", response_model=UserDb)
+async def read_users_me(
     current_user: User = Depends(auth_service.get_current_user)
-):
-    """
-    # Отримати поточного користувача.
+    ):
 
-    Отримує поточного користувача за допомогою токена доступу і об'єкта сеансу, повертає ім'я користувача та електронну пошту.
-
-    ## Параметри:
-    - current_user (User): Об'єкт поточного користувача.
-
-    ## Повертає:
-    - dict: Результат з поточним користувачем у вигляді словника з ім'ям користувача та електронною поштою.
-    """
-
-    return CucrrentUserResponse(
-        username=current_user.username,
-        email=current_user.email)
-
-
+    return current_user
 
 
 @router.get("/logout")
@@ -237,3 +230,30 @@ async def reset_password(
     await session.commit()
 
     return {"message": "Password reset successfully"}
+
+
+@router.patch('/avatar', response_model=UserDb)
+async def update_avatar_user(file: UploadFile = File(), 
+                             current_user: User = Depends(auth_service.get_current_user),
+                             session: AsyncSession = Depends(get_session)):
+    cloudinary.config(
+        cloud_name=settings.cloudinary_name,
+        api_key=settings.cloudinary_api_key,
+        api_secret=settings.cloudinary_api_secret,
+        secure=True
+    )
+
+    r = cloudinary.uploader.upload(file.file, 
+                                   public_id=f'ContactsApp/{current_user.username}', 
+                                   overwrite=True)
+    src_url = cloudinary.CloudinaryImage(
+        f'ContactsApp/{current_user.username}').build_url(
+                                   width=250, 
+                                   height=250, 
+                                   crop='fill', 
+                                   version=r.get('version'))
+    user = await repository_users.update_avatar(
+                                   current_user.email, 
+                                   src_url, 
+                                   session)
+    return user

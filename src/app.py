@@ -8,6 +8,7 @@ from database.connect import get_session
 from routes.auth_routs import router as auth_router
 from routes.contacts_routs import router as contacts_router
 
+
 app = FastAPI(
     title="Contacts Dadabase",
     description="API for Connecting with Contacts Dadabase",
