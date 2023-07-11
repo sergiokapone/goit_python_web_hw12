@@ -47,7 +47,7 @@ class Auth:
     SECRET_KEY = settings.secret_key
     ALGORITHM = settings.algorithm
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
-    r = redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
+    r = redis.from_url(settings.redis_host)
 
 
     def verify_password(self, plain_password, hashed_password):
