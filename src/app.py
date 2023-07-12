@@ -40,7 +40,7 @@ app.include_router(contacts_router, prefix='/contacts')
 
 @app.on_event("startup")
 async def startup():
-    r = redis.Redis(host=settings.redis_host, db=0, encoding="utf-8", decode_responses=True)
+    r = redis.from_url(settings.redis_host)
     await FastAPILimiter.init(r)
 
 
