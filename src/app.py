@@ -37,10 +37,10 @@ app.add_middleware(
 app.include_router(auth_router, prefix='/users')
 app.include_router(contacts_router, prefix='/contacts')
 
-
-def startup():
+@app.on_event("startup")
+async def startup():
     r = redis.Redis.from_url(settings.redis_host)
-    FastAPILimiter.init(r)
+    await FastAPILimiter.init(r)
 
 
 @app.get("/", tags=["Root"], 
