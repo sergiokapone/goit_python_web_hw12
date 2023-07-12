@@ -4,6 +4,8 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_limiter import FastAPILimiter
+from fastapi_limiter.depends import RateLimiter
+
 
 
 from sqlalchemy import text
@@ -38,11 +40,12 @@ app.include_router(contacts_router, prefix='/contacts')
 
 @app.on_event("startup")
 async def startup():
-    r = redis.from_url(settings.redis_host)
+    r = redis.Redis(host=settings.redis_host, db=0, encoding="utf-8", decode_responses=True)
     await FastAPILimiter.init(r)
 
 
-@app.get("/", tags=["Root"])
+@app.get("/", tags=["Root"], 
+dependencies=[Depends(RateLimiter(times=2, seconds=5))])
 async def root():
     """
     # Кореневий маршрут
