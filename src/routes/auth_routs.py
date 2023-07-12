@@ -1,8 +1,20 @@
 import secrets
-from fastapi import APIRouter, HTTPException, Depends, Response, status, Security, BackgroundTasks, Request, UploadFile, File
+from fastapi import APIRouter,\
+                    HTTPException,\
+                    Depends,\
+                    Response,\
+                    status,\
+                    Security,\
+                    BackgroundTasks,\
+                    Request,\
+                    UploadFile,\
+                    File
 
 
-from fastapi.security import OAuth2PasswordRequestForm, HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import OAuth2PasswordRequestForm,\
+                             HTTPAuthorizationCredentials,\
+                             HTTPBearer
+
 from pydantic import EmailStr
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -70,7 +82,8 @@ async def login(body: OAuth2PasswordRequestForm = Depends(),
     # Аутентифікація користувача та отримання токенів доступу.
 
     ## Параметри:
-    - body (OAuth2PasswordRequestForm): Форма запиту аутентифікації, яка містить дані електронної пошти та пароля.
+    - body (OAuth2PasswordRequestForm): Форма запиту аутентифікації, яка
+      містить дані електронної пошти та пароля.
     - session (SAsyncSession): Об'єкт сесії бази даних.
 
     ## Повертає:
@@ -113,7 +126,8 @@ async def refresh_token(
     # Оновлює токен доступу за допомогою токена оновлення.
 
     ## Параметри:
-    - credentials (HTTPAuthorizationCredentials): Об'єкт, що містить відправлені HTTP-заголовки авторизації.
+    - credentials (HTTPAuthorizationCredentials): Об'єкт, що містить
+    відправлені HTTP-заголовки авторизації.
     - session (AsyncSession): Об'єкт сесії бази даних.
 
     ## Повертає:
@@ -128,13 +142,18 @@ async def refresh_token(
     user = await repository_users.get_user_by_email(email, session)
     if user.refresh_token != token:
         await repository_users.update_token(user, None, session)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid refresh token")
 
     access_token = await auth_service.create_access_token(data={"sub": email})
-    refresh_token = await auth_service.create_refresh_token(data={"sub": email})
+    refresh_token = await auth_service.create_refresh_token(
+        data={"sub": email})
     await repository_users.update_token(user, refresh_token, session)
-    return LoginResponse(user={"username": user.username, "email": user.email},
-                    access_token=access_token)
+    return LoginResponse(user={
+                            "username": user.username,
+                            "email": user.email
+                            },
+                        access_token=access_token)
 
 @router.get("/current", response_model=UserDb)
 async def read_users_me(
@@ -245,7 +264,8 @@ async def forgot_password(
 ):
     user = await repository_users.get_user_by_email(email, session)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="User not found")
 
     # Генеруємо токен скидання паролю
     reset_token = secrets.token_hex(16)
