@@ -1,9 +1,11 @@
 import pathlib
 import pickle
-from typing import Optional
-from passlib.context import CryptContext
 
 import redis
+
+from typing import Optional
+from passliSb.context import CryptContext
+
 
 from environs import Env
 
@@ -23,6 +25,8 @@ from repository import users as repository_users
 file_env = pathlib.Path(__file__).parent.joinpath(".env")
 env = Env()
 env.read_env(file_env)
+
+
 class Auth:
     """
     Клас, що надає функціонал автентифікації та генерації токенів.
@@ -63,6 +67,7 @@ class Auth:
         """
         return self.pwd_context.verify(plain_password, hashed_password)
 
+
     def get_password_hash(self, password: str):
         """
         Генерує хеш паролю.
@@ -88,11 +93,19 @@ class Auth:
             str: Згенерований токен доступу.
         """
         to_encode = data.copy()
+
         if expires_delta:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
         else:
             expire = datetime.utcnow() + timedelta(minutes=15)
-        to_encode.update({"iat": datetime.utcnow(), "exp": expire, "scope": "access_token"})
+
+        to_encode.update(
+            {
+                "iat": datetime.utcnow(), 
+                "exp": expire, 
+                "scope": "access_token"
+            })
+
         encoded_access_token = jwt.encode(to_encode, 
                                           self.SECRET_KEY, 
                                           algorithm=self.ALGORITHM)
@@ -105,16 +118,19 @@ class Auth:
 
         Args:
             data (dict): Дані, які будуть закодовані у токені.
-            expires_delta (float, optional): Термін дії токену у секундах. За замовчуванням - 7 днів.
+            expires_delta (float, optional): Термін дії токену у секундах. 
+            За замовчуванням - 7 днів.
 
         Returns:
             str: Згенерований оновлювальний токен.
         """
         to_encode = data.copy()
+
         if expires_delta:
             expire = datetime.utcnow() + timedelta(seconds=expires_delta)
         else:
             expire = datetime.utcnow() + timedelta(days=7)
+
         to_encode.update(
                           {
                             "iat": datetime.utcnow(), 
@@ -159,7 +175,8 @@ class Auth:
         Отримує поточного користувача на основі переданого токену.
 
         Args:
-            token (str, optional): Токен доступу. За замовчуванням використовується залежність "oauth2_scheme".
+            token (str, optional): Токен доступу. 
+            За замовчуванням використовується залежність "oauth2_scheme".
             session (AsyncSession, optional): Об'єкт сесії бази даних.
 
         Returns:
@@ -177,12 +194,14 @@ class Auth:
         try:
             # Decode JWT
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+    
             if payload['scope'] == 'access_token':
                 email = payload["sub"]
                 if email is None:
                     raise credentials_exception
             else:
                 raise credentials_exception
+
         except JWTError:
             raise credentials_exception
 
@@ -201,7 +220,10 @@ class Auth:
     
     def extract_email_from_token(self, token):
         try:
-            decoded_token = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+            decoded_token = jwt.decode(
+                token, 
+                self.SECRET_KEY, 
+                algorithms=[self.ALGORITHM])
             email = decoded_token.get("sub")
             return email
         except JWTError:
@@ -219,12 +241,18 @@ class Auth:
 
     async def get_email_from_token(self, token: str):
         try:
-            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
+            payload = jwt.decode(
+                token, 
+                self.SECRET_KEY, 
+                algorithms=[self.ALGORITHM])
+
             email = payload["sub"]
+            
             return email
         except JWTError as e:
             print(e)
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                                detail="Invalid token for email verification")
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Invalid token for email verification")
     
 auth_service = Auth()

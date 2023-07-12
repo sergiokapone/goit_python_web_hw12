@@ -1,4 +1,5 @@
 import secrets
+
 from fastapi import APIRouter,\
                     HTTPException,\
                     Depends,\
@@ -10,7 +11,6 @@ from fastapi import APIRouter,\
                     UploadFile,\
                     File
 
-
 from fastapi.security import OAuth2PasswordRequestForm,\
                              HTTPAuthorizationCredentials,\
                              HTTPBearer
@@ -21,7 +21,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.connect import get_session
 from database.models import User
-from schemas import LoginResponse, RequestEmail, UserDb, UserModel, UserResponse
+from schemas import LoginResponse,\
+                    RequestEmail,\
+                    UserDb,\
+                    UserModel,\
+                    UserResponse
 
 from repository import users as repository_users
 from services.auth import auth_service
@@ -205,7 +209,8 @@ async def confirmed_email(token: str,
 
     ## Повертає:
 
-    - Словник з повідомленням про підтвердження електронної пошти: `{"message": "Email confirmed"}`.
+    - Словник з повідомленням про підтвердження електронної пошти: 
+    `{"message": "Email confirmed"}`.
 
     **Виключення:**
 
@@ -220,7 +225,9 @@ async def confirmed_email(token: str,
                             detail="Verification error")
     if user.confirmed:
         return {"message": "Your email is already confirmed"}
+
     await repository_users.confirmed_email(email, session)
+
     return {"message": "Email confirmed"}
 
 
@@ -242,7 +249,8 @@ async def request_email(body: RequestEmail,
 
     ## Повертає:
 
-    - Словник з повідомленням про надіслання запиту на підтвердження електронної пошти: `{"message": "Check your email for confirmation."}`.
+    - Словник з повідомленням про надіслання запиту на підтвердження електронної пошти: 
+    `{"message": "Check your email for confirmation."}`.
 
     """
 
