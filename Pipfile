@@ -27,6 +27,7 @@ environs = "*"
 cloudinary = "*"
 redis = "*"
 fastapi-limiter = "*"
+aioredis = "*"
 
 [dev-packages]
 

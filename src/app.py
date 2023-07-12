@@ -1,4 +1,4 @@
-import redis 
+import aioredis 
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,7 +40,7 @@ app.include_router(contacts_router, prefix='/contacts')
 
 @app.on_event("startup")
 async def startup():
-    r = redis.from_url(settings.redis_host)
+    r = await aioredis.create_redis_pool(settings.redis_host)
     await FastAPILimiter.init(r)
 
 
