@@ -26,6 +26,7 @@ fastapi-mail = "*"
 environs = "*"
 cloudinary = "*"
 redis = "*"
+fastapi-limiter = "*"
 
 [dev-packages]
 

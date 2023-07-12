@@ -1,10 +1,18 @@
+import redis 
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+
+from fastapi_limiter import FastAPILimiter
+
+
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from conf.config import settings
 
 from database.connect import get_session
+
 from routes.auth_routs import router as auth_router
 from routes.contacts_routs import router as contacts_router
 
@@ -26,6 +34,12 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix='/users')
 app.include_router(contacts_router, prefix='/contacts')
+
+
+@app.on_event("startup")
+async def startup():
+    r = redis.from_url(settings.redis_host)
+    await FastAPILimiter.init(r)
 
 
 @app.get("/", tags=["Root"])
@@ -63,11 +77,13 @@ async def healthchecker(session: AsyncSession = Depends(get_session)):
     try:
         result = await session.execute(text("SELECT 1"))
         rows = result.fetchall()
+
         if not rows:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Database is not configured correctly",
             )
+
         return {"message": "You successfully connected to the database!"}
     except Exception as e:
         print(e)
