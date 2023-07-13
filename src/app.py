@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_limiter.depends import RateLimiter
 from fastapi_limiter import FastAPILimiter
-import redis
+import redis.asyncio as redis
 
 
 
@@ -40,8 +40,8 @@ app.include_router(contacts_router, prefix='/contacts')
 
 @app.on_event("startup")
 async def startup():
-    r = redis.from_url(settings.redis_host)
-    FastAPILimiter.init(r)
+    r = redis.from_url(settings.redis_host, encoding="utf-8", decode_responses=True)
+    await  FastAPILimiter.init(r)
 
 
 @app.get("/", tags=["Root"], 
