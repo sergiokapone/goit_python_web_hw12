@@ -12,6 +12,8 @@ COPY Pipfile* /app/
 # Установка зависимостей с помощью pipenv
 RUN pipenv install
 
+EXPOSE 8000
+
 # Копирование приложения
 COPY . /app
 
