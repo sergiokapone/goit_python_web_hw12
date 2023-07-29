@@ -18,4 +18,4 @@ EXPOSE 8000
 COPY . /app
 
 # Запуск приложения
-CMD ["pipenv", "run", "python", "src/main.py"]
+CMD ["uvicorn", "src.main:app", "--host 0.0.0.0",  "--port 8000", "--reload"]
