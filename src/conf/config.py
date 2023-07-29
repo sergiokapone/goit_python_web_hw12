@@ -1,10 +1,15 @@
 import pathlib
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 file_env = pathlib.Path(__file__).parent.parent.parent.joinpath(".env")
 
+
 class Settings(BaseSettings):
+    """
+    Settings for the project.
+    """
+
     sqlalchemy_database_url: str
     secret_key: str
     algorithm: str
@@ -20,6 +25,9 @@ class Settings(BaseSettings):
     redis_port: int = 6379
 
     class Config:
+        """
+        Configuration for the settings.
+        """
         env_file = file_env
         env_file_encoding = "utf-8"
 

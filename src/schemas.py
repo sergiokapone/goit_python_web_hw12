@@ -1,9 +1,7 @@
+from datetime import datetime
 from typing import Dict, Union
 
-from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, validator
-
-
 
 class ContactBase(BaseModel):
     first_name: str = Field(..., example="Sergiy")
@@ -18,7 +16,9 @@ class ContactBase(BaseModel):
         try:
             datetime.strptime(value, "%Y-%m-%d")
         except ValueError:
-            raise ValueError("Invalid date format. Expected format: YYYY-MM-DD")
+            raise ValueError(
+                "Invalid date format. Expected format: YYYY-MM-DD"
+                )
         return value
 
 
@@ -28,7 +28,7 @@ class ContactCreate(ContactBase):
 
 class Contact(ContactBase):
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserModel(BaseModel):
@@ -44,7 +44,7 @@ class UserDb(BaseModel):
     avatar: str = Field(..., example="https://example.com/avatar.jpg")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserResponse(BaseModel):
     user: UserDb

@@ -1,12 +1,31 @@
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Date, func
+"""
+models.py
+
+This module defines the SQLAlchemy ORM models for the contacts and users tables.
+"""
+
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Date,
+    func,
+)
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import MetaData
 
 metadata = MetaData()
 Base = declarative_base(metadata=metadata)
 
+
 class Contact(Base):
-    
+    """
+    Represents a contact in the contacts table.
+    """
+
     __tablename__ = "contacts"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -16,11 +35,14 @@ class Contact(Base):
     phone_number = Column(String, nullable=False)
     birthday = Column(Date, nullable=False)
     additional_data = Column(String, nullable=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship('User', back_populates="contacts")
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="contacts")
 
 
 class User(Base):
+    """
+    Represents a user in the users table.
+    """
 
     __tablename__ = "users"
 
@@ -28,10 +50,9 @@ class User(Base):
     username = Column(String(50))
     email = Column(String(250), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
-    created_at = Column(DateTime, default=func.now(), nullable=True)  
+    created_at = Column(DateTime, default=func.now(), nullable=True)
     avatar = Column(String(255), nullable=True)
     refresh_token = Column(String(255), nullable=True)
-    confirmed = Column(Boolean, default = False) 
-    contacts = relationship('Contact', back_populates="user")
-    reset_token = Column(String(255), nullable=True) 
- 
+    confirmed = Column(Boolean, default=False)
+    contacts = relationship("Contact", back_populates="user")
+    reset_token = Column(String(255), nullable=True)

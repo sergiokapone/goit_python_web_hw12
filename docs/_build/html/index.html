@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to Rest API’s documentation! &#8212; Rest API  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=8fc2db88" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Rest API  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to Rest API’s documentation!</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="welcome-to-rest-api-s-documentation">
+<h1>Welcome to Rest API’s documentation!<a class="headerlink" href="#welcome-to-rest-api-s-documentation" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="module-main">
+<span id="rest-api-main"></span><h1>REST API main<a class="headerlink" href="#module-main" title="Permalink to this heading">¶</a></h1>
+<p>Run Uvicorn server with your ASGI application.</p>
+<p>This script starts the Uvicorn server with your ASGI application, allowing you to serve the application on a specified
+host and port.</p>
+<p>Usage::
+- Ensure the required modules are installed by running <code class="docutils literal notranslate"><span class="pre">pipenv</span> <span class="pre">install</span> <span class="pre">uvicorn</span></code>.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">To</span> <span class="n">start</span> <span class="n">the</span> <span class="n">server</span> <span class="k">with</span> <span class="n">the</span> <span class="n">default</span> <span class="n">settings</span><span class="p">,</span> <span class="n">run</span><span class="p">::</span>
+
+    <span class="n">python</span> <span class="n">src</span><span class="o">/</span><span class="n">main</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</section>
+<section id="module-app">
+<span id="rest-api-app"></span><h1>REST API app<a class="headerlink" href="#module-app" title="Permalink to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="app.healthchecker">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">healthchecker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#app.healthchecker" title="Permalink to this definition">¶</a></dt>
+<dd><p># Health Checker</p>
+<p>Перевіряє стан з’єднання з базою даних.</p>
+<p>## Параметри запиту
+- <strong>session</strong>: Асинхронна сесія бази даних (залежність)</p>
+<p>## Відповідь
+- <strong>message</strong>: Повідомлення про успішне з’єднання з базою даних</p>
+<p>## Помилки
+- <strong>HTTP_500_INTERNAL_SERVER_ERROR</strong>: Помилка підключення до бази даних або неправильна конфігурація бази даних</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.root">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">root</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.root" title="Permalink to this definition">¶</a></dt>
+<dd><p># Кореневий маршрут</p>
+<p>Це головна точка вхідної точки API.</p>
+<p>## Відповідь</p>
+<p>Якщо все пройшло успішно, за цією адресою видається вітальне слово
+- <strong>message</strong>: Привітальне повідомлення (“Hello World!”)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.startup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.</span></span><span class="sig-name descname"><span class="pre">startup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.startup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-database">
+<span id="rest-api-repository-database"></span><h1>REST API repository Database<a class="headerlink" href="#module-database" title="Permalink to this heading">¶</a></h1>
+</section>
+<section id="module-repository.contacts">
+<span id="rest-api-repository-contacts"></span><h1>REST API repository Contacts<a class="headerlink" href="#module-repository.contacts" title="Permalink to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.contacts.create_contact">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.contacts.</span></span><span class="sig-name descname"><span class="pre">create_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ContactCreate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#repository.contacts.create_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Створити контакт.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact</strong> (<em>ContactCreate</em>) – Об’єкт, що містить дані для створення контакту.</p></li>
+<li><p><strong>user</strong> (<em>User</em>) – Користувач, для якого створюється контакт.</p></li>
+<li><p><strong>session</strong> (<em>AsyncSession</em>) – Об’єкт сеансу бази даних (за замовчуванням отримується з <cite>get_session</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Новостворений об’єкт контакту.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Contact</p>
+</dd>
+</dl>
+<p>Створює новий контакт з наданими даними. Використовує електронну пошту
+користувача для зв’язку з власником контакту.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.contacts.delete_contact">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.contacts.</span></span><span class="sig-name descname"><span class="pre">delete_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#repository.contacts.delete_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Видалити контакт.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact_id</strong> (<em>int</em>) – Ідентифікатор контакту, який потрібно видалити.</p></li>
+<li><p><strong>user</strong> (<em>User</em>) – Об’єкт поточного користувача.</p></li>
+<li><p><strong>session</strong> (<em>AsyncSession</em>) – Об’єкт сеансу бази даних (за замовчуванням отримується з <cite>get_session</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Результат видалення контакту у вигляді словника з повідомленням та видаленим контактом.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p>Видаляє контакт з вказаним ідентифікатором, якщо користувач з вказаною
+електронною поштою є власником контакту.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.contacts.get_all_contacts">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.contacts.</span></span><span class="sig-name descname"><span class="pre">get_all_contacts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#repository.contacts.get_all_contacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отримати всі контакти.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user</strong> (<em>User</em>) – Об’єкт поточного користувача.</p></li>
+<li><p><strong>session</strong> (<em>AsyncSession</em>) – Об’єкт сеансу бази даних.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список контактів.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Contact]</p>
+</dd>
+</dl>
+<p>Отримує всі контакти, які належать користувачу з вказаною електронною поштою.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.contacts.get_upcoming_birthdays">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.contacts.</span></span><span class="sig-name descname"><span class="pre">get_upcoming_birthdays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">days</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#repository.contacts.get_upcoming_birthdays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отримати наближені дні народження контактів.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>days</strong> (<em>int</em>) – Кількість днів для визначення наближених днів народження.</p></li>
+<li><p><strong>user</strong> (<em>User</em>) – Об’єкт користувача.</p></li>
+<li><p><strong>session</strong> (<em>AsyncSession</em><em>, </em><em>optional</em>) – Об’єкт сесії бази даних (за замовчуванням отримується з <cite>get_session</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Список результатів запиту до бази даних.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[dict]</p>
+</dd>
+</dl>
+<p>Визначає наближені дні народження контактів для заданого користувача.
+Результати запиту повертаються у вигляді списку словників з контактами,
+у яких дні народження наступають протягом вказаної кількості днів.</p>
+<p>Викидає:
+- HTTPException: Якщо користувач не автентифікований.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.contacts.is_upcoming_birthday">
+<span class="sig-prename descclassname"><span class="pre">repository.contacts.</span></span><span class="sig-name descname"><span class="pre">is_upcoming_birthday</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">birthday</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#repository.contacts.is_upcoming_birthday" title="Permalink to this definition">¶</a></dt>
+<dd><p>Визначити, чи наступає день народження.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>birthday</strong> (<em>date</em>) – Дата дня народження.</p></li>
+<li><p><strong>start_date</strong> (<em>date</em>) – Початкова дата для визначення наступаючих днів народження.</p></li>
+<li><p><strong>end_date</strong> (<em>date</em>) – Кінцева дата для визначення наступаючих днів народження.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>True</cite>, якщо день народження наступає, інакше <cite>False</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.contacts.update_contact">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.contacts.</span></span><span class="sig-name descname"><span class="pre">update_contact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contact_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ContactCreate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#repository.contacts.update_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Оновити контакт.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>contact_id</strong> (<em>int</em>) – Ідентифікатор контакту, який потрібно оновити.</p></li>
+<li><p><strong>contact</strong> (<em>ContactCreate</em>) – Об’єкт, що містить нові дані для оновлення контакту.</p></li>
+<li><p><strong>user</strong> (<em>User</em>) – Об’єкт поточного користувача.</p></li>
+<li><p><strong>session</strong> (<em>AsyncSession</em>) – Об’єкт сеансу бази даних (за замовчуванням отримується з <cite>get_session</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Оновлений об’єкт контакту.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Contact</p>
+</dd>
+</dl>
+<p>Оновлює контакт з вказаним ідентифікатором, якщо користувач з вказаною
+електр</p>
+</dd></dl>
+
+</section>
+<section id="module-repository.users">
+<span id="rest-api-repository-users"></span><h1>REST API repository Users<a class="headerlink" href="#module-repository.users" title="Permalink to this heading">¶</a></h1>
+<p>Файл <cite>users.py</cite> містить функції, пов’язані з операціями користувачів, такі як
+тримання користувача за електронною поштою, створення нового користувача та
+новлення токену оновлення для користувача.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.confirmed_email">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">confirmed_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#repository.users.confirmed_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.create_user">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">create_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UserModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">User</span></span></span><a class="headerlink" href="#repository.users.create_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Створює нового користувача.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>body (UserModel): Модель користувача, що містить дані для створення користувача.
+session (AsyncSession): Об’єкт сесії бази даних.</p>
+</dd>
+<dt>Returns:</dt><dd><p>User: Об’єкт створеного користувача.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.get_user_by_email">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">get_user_by_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#repository.users.get_user_by_email" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отримує об’єкт користувача за електронною поштою.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>email (str): Електронна пошта користувача.
+session (AsyncSession): Об’єкт сесії бази даних.</p>
+</dd>
+<dt>Returns:</dt><dd><p>User: Об’єкт користувача, якщо знайдено, або None, якщо не знайдено.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.get_user_by_reset_token">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">get_user_by_reset_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">User</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#repository.users.get_user_by_reset_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отримує об’єкт користувача за токеном скидання пароля.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>reset_token (str): Токен скидання пароля.
+session (AsyncSession): Об’єкт сесії бази даних.</p>
+</dd>
+<dt>Returns:</dt><dd><p>User: Об’єкт користувача, якщо знайдено, або None, якщо не знайдено.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.save_reset_token">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">save_reset_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#repository.users.save_reset_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Зберігає токен скидання пароля користувача.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>user (User): Об’єкт користувача.
+reset_token (str): Токен скидання пароля.
+session (AsyncSession): Об’єкт сесії бази даних.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.update_avatar">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">update_avatar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">User</span></span></span><a class="headerlink" href="#repository.users.update_avatar" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="repository.users.update_token">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">repository.users.</span></span><span class="sig-name descname"><span class="pre">update_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">User</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#repository.users.update_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Оновлює токен оновлення для користувача.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>user (User): Об’єкт користувача.
+token (str | None): Токен оновлення або None, якщо токен не вказаний.
+session (AsyncSession): Об’єкт сесії бази даних.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-services.auth">
+<span id="rest-api-services-auth"></span><h1>REST API services Auth<a class="headerlink" href="#module-services.auth" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="services.auth.Auth">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">services.auth.</span></span><span class="sig-name descname"><span class="pre">Auth</span></span><a class="headerlink" href="#services.auth.Auth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Клас, що надає функціонал автентифікації та генерації токенів.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><p>pwd_context (CryptContext): Контекст шифрування паролей.
+SECRET_KEY (str): Секретний ключ для підпису токенів.
+ALGORITHM (str): Алгоритм шифрування для підпису токенів.
+oauth2_scheme (OAuth2PasswordBearer): Залежність для отримання токену з HTTP запиту.</p>
+</dd>
+<dt>Methods:</dt><dd><p>verify_password(plain_password, hashed_password): Перевіряє валідність паролю.
+get_password_hash(password): Генерує хеш паролю.
+create_access_token(data, expires_delta): Генерує новий токен доступу.
+create_refresh_token(data, expires_delta): Генерує новий оновлювальний токен.
+decode_refresh_token(refresh_token): Розшифровує оновлювальний токен.
+get_current_user(token, db): Отримує поточного користувача на основі переданого токену.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.auth.Auth.ALGORITHM">
+<span class="sig-name descname"><span class="pre">ALGORITHM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HS256'</span></em><a class="headerlink" href="#services.auth.Auth.ALGORITHM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.auth.Auth.SECRET_KEY">
+<span class="sig-name descname"><span class="pre">SECRET_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'secret_key'</span></em><a class="headerlink" href="#services.auth.Auth.SECRET_KEY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.create_access_token">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_access_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.create_access_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Генерує новий токен доступу.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data (dict): Дані, які будуть закодовані у токені.
+expires_delta (float, optional): Термін дії токену у секундах. За замовчуванням - 15 хвилин.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Згенерований токен доступу.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.create_email_token">
+<span class="sig-name descname"><span class="pre">create_email_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.create_email_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.create_refresh_token">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_refresh_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.create_refresh_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Генерує новий оновлювальний токен.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>data (dict): Дані, які будуть закодовані у токені.
+expires_delta (float, optional): Термін дії токену у секундах. 
+За замовчуванням - 7 днів.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Згенерований оновлювальний токен.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.decode_refresh_token">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">decode_refresh_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">refresh_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.decode_refresh_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Розшифровує оновлювальний токен.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>refresh_token (str): Оновлювальний токен.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Електронна пошта, пов’язана з оновлювальним токеном.</p>
+</dd>
+<dt>Raises:</dt><dd><p>HTTPException: Виникає, якщо токен недійсний або містить неприпустимий обсяг дій.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.extract_email_from_token">
+<span class="sig-name descname"><span class="pre">extract_email_from_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.extract_email_from_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.get_current_user">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_current_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(OAuth2PasswordBearer)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncSession</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Depends(get_session)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.get_current_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отримує поточного користувача на основі переданого токену.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>token (str, optional): Токен доступу. 
+За замовчуванням використовується залежність “oauth2_scheme”.
+session (AsyncSession, optional): Об’єкт сесії бази даних.</p>
+</dd>
+<dt>Returns:</dt><dd><p>User: Об’єкт поточного користувача.</p>
+</dd>
+<dt>Raises:</dt><dd><p>HTTPException: Виникає, якщо токен недійсний або не містить ідентифікатора користувача.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.get_email_from_token">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_email_from_token</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.get_email_from_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.get_password_hash">
+<span class="sig-name descname"><span class="pre">get_password_hash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.get_password_hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Генерує хеш паролю.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>password (str): Пароль у відкритому вигляді.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: Хеш паролю.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.auth.Auth.oauth2_scheme">
+<span class="sig-name descname"><span class="pre">oauth2_scheme</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;fastapi.security.oauth2.OAuth2PasswordBearer</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#services.auth.Auth.oauth2_scheme" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.auth.Auth.pwd_context">
+<span class="sig-name descname"><span class="pre">pwd_context</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CryptContext&gt;</span></em><a class="headerlink" href="#services.auth.Auth.pwd_context" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="services.auth.Auth.r">
+<span class="sig-name descname"><span class="pre">r</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Redis&lt;ConnectionPool&lt;Connection&lt;host=localhost,port=6379,db=0&gt;&gt;&gt;</span></em><a class="headerlink" href="#services.auth.Auth.r" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="services.auth.Auth.verify_password">
+<span class="sig-name descname"><span class="pre">verify_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plain_password</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hashed_password</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.auth.Auth.verify_password" title="Permalink to this definition">¶</a></dt>
+<dd><p>Перевіряє валідність паролю.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>plain_password (str): Пароль у відкритому вигляді.
+hashed_password (str): Хеш паролю.</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True, якщо пароль валідний, False - в іншому випадку.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-services.email">
+<span id="rest-api-services-email"></span><h1>REST API services Email<a class="headerlink" href="#module-services.email" title="Permalink to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="services.email.reset_password_by_email">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">services.email.</span></span><span class="sig-name descname"><span class="pre">reset_password_by_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EmailStr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.email.reset_password_by_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="services.email.send_email">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">services.email.</span></span><span class="sig-name descname"><span class="pre">send_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">EmailStr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#services.email.send_email" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Welcome to Rest API’s documentation!</a></li>
+<li><a class="reference internal" href="#module-main">REST API main</a></li>
+<li><a class="reference internal" href="#module-app">REST API app</a><ul>
+<li><a class="reference internal" href="#app.healthchecker"><code class="docutils literal notranslate"><span class="pre">healthchecker()</span></code></a></li>
+<li><a class="reference internal" href="#app.root"><code class="docutils literal notranslate"><span class="pre">root()</span></code></a></li>
+<li><a class="reference internal" href="#app.startup"><code class="docutils literal notranslate"><span class="pre">startup()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-database">REST API repository Database</a></li>
+<li><a class="reference internal" href="#module-repository.contacts">REST API repository Contacts</a><ul>
+<li><a class="reference internal" href="#repository.contacts.create_contact"><code class="docutils literal notranslate"><span class="pre">create_contact()</span></code></a></li>
+<li><a class="reference internal" href="#repository.contacts.delete_contact"><code class="docutils literal notranslate"><span class="pre">delete_contact()</span></code></a></li>
+<li><a class="reference internal" href="#repository.contacts.get_all_contacts"><code class="docutils literal notranslate"><span class="pre">get_all_contacts()</span></code></a></li>
+<li><a class="reference internal" href="#repository.contacts.get_upcoming_birthdays"><code class="docutils literal notranslate"><span class="pre">get_upcoming_birthdays()</span></code></a></li>
+<li><a class="reference internal" href="#repository.contacts.is_upcoming_birthday"><code class="docutils literal notranslate"><span class="pre">is_upcoming_birthday()</span></code></a></li>
+<li><a class="reference internal" href="#repository.contacts.update_contact"><code class="docutils literal notranslate"><span class="pre">update_contact()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-repository.users">REST API repository Users</a><ul>
+<li><a class="reference internal" href="#repository.users.confirmed_email"><code class="docutils literal notranslate"><span class="pre">confirmed_email()</span></code></a></li>
+<li><a class="reference internal" href="#repository.users.create_user"><code class="docutils literal notranslate"><span class="pre">create_user()</span></code></a></li>
+<li><a class="reference internal" href="#repository.users.get_user_by_email"><code class="docutils literal notranslate"><span class="pre">get_user_by_email()</span></code></a></li>
+<li><a class="reference internal" href="#repository.users.get_user_by_reset_token"><code class="docutils literal notranslate"><span class="pre">get_user_by_reset_token()</span></code></a></li>
+<li><a class="reference internal" href="#repository.users.save_reset_token"><code class="docutils literal notranslate"><span class="pre">save_reset_token()</span></code></a></li>
+<li><a class="reference internal" href="#repository.users.update_avatar"><code class="docutils literal notranslate"><span class="pre">update_avatar()</span></code></a></li>
+<li><a class="reference internal" href="#repository.users.update_token"><code class="docutils literal notranslate"><span class="pre">update_token()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-services.auth">REST API services Auth</a><ul>
+<li><a class="reference internal" href="#services.auth.Auth"><code class="docutils literal notranslate"><span class="pre">Auth</span></code></a><ul>
+<li><a class="reference internal" href="#services.auth.Auth.ALGORITHM"><code class="docutils literal notranslate"><span class="pre">Auth.ALGORITHM</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.SECRET_KEY"><code class="docutils literal notranslate"><span class="pre">Auth.SECRET_KEY</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.create_access_token"><code class="docutils literal notranslate"><span class="pre">Auth.create_access_token()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.create_email_token"><code class="docutils literal notranslate"><span class="pre">Auth.create_email_token()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.create_refresh_token"><code class="docutils literal notranslate"><span class="pre">Auth.create_refresh_token()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.decode_refresh_token"><code class="docutils literal notranslate"><span class="pre">Auth.decode_refresh_token()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.extract_email_from_token"><code class="docutils literal notranslate"><span class="pre">Auth.extract_email_from_token()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.get_current_user"><code class="docutils literal notranslate"><span class="pre">Auth.get_current_user()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.get_email_from_token"><code class="docutils literal notranslate"><span class="pre">Auth.get_email_from_token()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.get_password_hash"><code class="docutils literal notranslate"><span class="pre">Auth.get_password_hash()</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.oauth2_scheme"><code class="docutils literal notranslate"><span class="pre">Auth.oauth2_scheme</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.pwd_context"><code class="docutils literal notranslate"><span class="pre">Auth.pwd_context</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.r"><code class="docutils literal notranslate"><span class="pre">Auth.r</span></code></a></li>
+<li><a class="reference internal" href="#services.auth.Auth.verify_password"><code class="docutils literal notranslate"><span class="pre">Auth.verify_password()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-services.email">REST API services Email</a><ul>
+<li><a class="reference internal" href="#services.email.reset_password_by_email"><code class="docutils literal notranslate"><span class="pre">reset_password_by_email()</span></code></a></li>
+<li><a class="reference internal" href="#services.email.send_email"><code class="docutils literal notranslate"><span class="pre">send_email()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">Rest API  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Welcome to Rest API’s documentation!</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, sergiokapone.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.1.
+    </div>
+  </body>
+</html>

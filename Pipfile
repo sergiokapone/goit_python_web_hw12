@@ -28,8 +28,20 @@ cloudinary = "*"
 redis = "*"
 fastapi-limiter = "0.1.5"
 aioredis = "*"
+pydantic-settings = "*"
 
 [dev-packages]
+sphinx = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-mock = "*"
+pytest-cov = "*"
+httpx = "*"
+aiosqlite = "*"
+pytest-trio = "*"
+fakeredis = "*"
+aioresponses = "*"
+asyncpgsa = "*"
 
 [requires]
 python_version = "3.10"

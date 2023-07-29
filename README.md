@@ -55,6 +55,7 @@ docker run --name redis-cache -d -p 6379:6379 redis
 ```
 
 В `.env` треба використати змінну `REDIS_HOST=redis://localhost:6379`[^1]
+
 ## Запуск сервера
 
 Для запуску сервера введіть в віртуальному оточенні команду
@@ -66,7 +67,7 @@ runserver
 або
 
 ```shell
-pipenv run python src/main.py
+pipлenv run python src/main.py
 ```
 
 Після успішного запуску сервера, встановиться зв'язок з базою даник.

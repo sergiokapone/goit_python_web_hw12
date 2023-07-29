@@ -14,15 +14,17 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-from database.connect import get_session
-from database.models import User
+from database import get_session
+from database import User
 
 from services.auth import auth_service
 
 from schemas import UserModel
 
-async def get_user_by_email(email: str, 
-                            session: AsyncSession = Depends(get_session)) -> User | None:
+
+async def get_user_by_email(
+    email: str, session: AsyncSession = Depends(get_session)
+) -> User | None:
     """
     Отримує об'єкт користувача за електронною поштою.
 
@@ -33,7 +35,7 @@ async def get_user_by_email(email: str,
     Returns:
         User: Об'єкт користувача, якщо знайдено, або None, якщо не знайдено.
 
-    """  
+    """
     try:
         result = await session.execute(select(User).filter(User.email == email))
         user = result.scalar_one_or_none()
@@ -42,8 +44,9 @@ async def get_user_by_email(email: str,
         return None
 
 
-async def create_user(body: UserModel, 
-                      session: AsyncSession = Depends(get_session)) -> User:
+async def create_user(
+    body: UserModel, session: AsyncSession = Depends(get_session)
+) -> User:
     """
     Створює нового користувача.
 
@@ -64,12 +67,14 @@ async def create_user(body: UserModel,
 
     refresh_token = await auth_service.create_refresh_token({"sub": body.email})
 
-    new_user = User(username=body.username,
-                    email=body.email,
-                    password=body.password,
-                    created_at=datetime.now(),
-                    avatar=avatar,
-                    refresh_token=refresh_token)
+    new_user = User(
+        username=body.username,
+        email=body.email,
+        password=body.password,
+        created_at=datetime.now(),
+        avatar=avatar,
+        refresh_token=refresh_token,
+    )
 
     session.add(new_user)
     await session.commit()
@@ -78,8 +83,9 @@ async def create_user(body: UserModel,
     return new_user
 
 
-async def update_token(user: User, token: str | None, 
-                    session: AsyncSession = Depends(get_session)) -> None:
+async def update_token(
+    user: User, token: str | None, session: AsyncSession = Depends(get_session)
+) -> None:
     """
     Оновлює токен оновлення для користувача.
 
@@ -93,16 +99,18 @@ async def update_token(user: User, token: str | None,
     await session.commit()
 
 
-async def confirmed_email(email: str, 
-                          session: AsyncSession = Depends(get_session)) -> None:
+async def confirmed_email(
+    email: str, session: AsyncSession = Depends(get_session)
+) -> None:
     user = await get_user_by_email(email, session)
     print(user)
     user.confirmed = True
     await session.commit()
 
 
-async def save_reset_token(user: User, reset_token: str, 
-                           session: AsyncSession = Depends(get_session)) -> None:
+async def save_reset_token(
+    user: User, reset_token: str, session: AsyncSession = Depends(get_session)
+) -> None:
     """
     Зберігає токен скидання пароля користувача.
 
@@ -116,8 +124,9 @@ async def save_reset_token(user: User, reset_token: str,
     await session.commit()
 
 
-async def get_user_by_reset_token(reset_token: str, 
-                                  session: AsyncSession = Depends(get_session)) -> User | None:
+async def get_user_by_reset_token(
+    reset_token: str, session: AsyncSession = Depends(get_session)
+) -> User | None:
     """
     Отримує об'єкт користувача за токеном скидання пароля.
 
@@ -130,18 +139,18 @@ async def get_user_by_reset_token(reset_token: str,
 
     """
     try:
-        result = await session.\
-            execute(select(User).\
-                    filter(User.reset_token == reset_token))
+        result = await session.execute(
+            select(User).filter(User.reset_token == reset_token)
+        )
         user = result.scalar_one_or_none()
         return user
     except NoResultFound:
         return None
-    
-    
-async def update_avatar(email, 
-                        url: str, 
-                        session: AsyncSession = Depends(get_session)) -> User:
+
+
+async def update_avatar(
+    email, url: str, session: AsyncSession = Depends(get_session)
+) -> User:
     user = await get_user_by_email(email, session)
     user.avatar = url
     await session.commit()
