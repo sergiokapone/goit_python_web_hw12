@@ -18,7 +18,7 @@ EXPOSE 8000
 COPY . /app
 
 # Добавление переменной окружения PYTHONPATH
-ENV PYTHONPATH "${PYTHONPATH}:/app"
+ENV PYTHONPATH "${PYTHONPATH}:/app/src"
 
 # Запуск приложения
-CMD ["uvicorn", "src.main:app", "--host 0.0.0.0",  "--port 8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host 0.0.0.0",  "--port 8000", "--reload"]
