@@ -27,30 +27,42 @@ TestingAsyncSessionLocal = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
 
-        
+
 @pytest.fixture(scope="module")
 async def overrides_session() -> AsyncSession:
-    
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    
+    # async with engine.begin() as conn:
+    #     await conn.run_sync(Base.metadata.drop_all)
+    #     await conn.run_sync(Base.metadata.create_all)
+
     async with TestingAsyncSessionLocal() as session:
         yield session
 
-     
+
+@pytest.fixture(scope="module")
+async def test_user(overrides_session):
+    # Создайте здесь тестового пользователя и установите confirmed=True
+    async with overrides_session() as session:
+        user_data = {
+            "username": "testuser1",
+            "email": "testuser1@example.com",
+            "password": "qwer1234",
+            "confirmed": True,  # Установите поле confirmed=True
+        }
+        user = User(**user_data)
+        session.add(user)
+        await session.commit()
+
+        yield user_data  # Возвращает данные пользователя для использования в тестах
+
+
 @pytest.fixture(scope="module")
 def client(overrides_session):
-    
     async def override_get_session():
         return await overrides_session.__anext__()
 
     app.dependency_overrides[get_session] = override_get_session
-    
-    return AsyncClient(
-            app=app,
-            base_url="http://test"
-    )
+
+    return AsyncClient(app=app, base_url="http://test")
 
 
 @pytest.fixture(scope="module")
@@ -60,6 +72,7 @@ def user():
         "email": "testuser1@example.com",
         "password": "qwer1234",
     }
+
 
 @pytest.fixture(scope="module")
 def credentials():

@@ -12,14 +12,6 @@ REST API main
   :undoc-members:
   :show-inheritance:
 
-REST API app
-===================
-.. automodule:: app
-  :members:
-  :undoc-members:
-  :show-inheritance:
-
-
 REST API repository Database
 ================================
 .. automodule:: database
