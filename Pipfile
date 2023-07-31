@@ -12,7 +12,7 @@ uvicorn = "*"
 pydantic = {extras = ["email"], version = "*"}
 faker = "*"
 aiopg = "*"
-sqlalchemy = "*"
+sqlalchemy = "==2.*"
 asyncpg = "*"
 fastapi-jwt-auth = "*"
 passlib = "*"
@@ -42,6 +42,7 @@ pytest-trio = "*"
 fakeredis = "*"
 aioresponses = "*"
 asyncpgsa = "*"
+pytest-order = "*"
 
 [requires]
 python_version = "3.10"

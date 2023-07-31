@@ -22,9 +22,7 @@ from services.auth import auth_service
 from schemas import UserModel
 
 
-async def get_user_by_email(
-    email: str, session: AsyncSession = Depends(get_session)
-) -> User | None:
+async def get_user_by_email(email: str, session: AsyncSession) -> User | None:
     """
     Отримує об'єкт користувача за електронною поштою.
 
@@ -44,9 +42,7 @@ async def get_user_by_email(
         return None
 
 
-async def create_user(
-    body: UserModel, session: AsyncSession = Depends(get_session)
-) -> User:
+async def create_user(body: UserModel, session: AsyncSession) -> User:
     """
     Створює нового користувача.
 
@@ -83,9 +79,7 @@ async def create_user(
     return new_user
 
 
-async def update_token(
-    user: User, token: str | None, session: AsyncSession = Depends(get_session)
-) -> None:
+async def update_token(user: User, token: str | None, session: AsyncSession) -> None:
     """
     Оновлює токен оновлення для користувача.
 
@@ -99,18 +93,14 @@ async def update_token(
     await session.commit()
 
 
-async def confirmed_email(
-    email: str, session: AsyncSession = Depends(get_session)
-) -> None:
+async def confirmed_email(email: str, session: AsyncSession) -> None:
     user = await get_user_by_email(email, session)
     print(user)
     user.confirmed = True
     await session.commit()
 
 
-async def save_reset_token(
-    user: User, reset_token: str, session: AsyncSession = Depends(get_session)
-) -> None:
+async def save_reset_token(user: User, reset_token: str, session: AsyncSession) -> None:
     """
     Зберігає токен скидання пароля користувача.
 
@@ -125,7 +115,7 @@ async def save_reset_token(
 
 
 async def get_user_by_reset_token(
-    reset_token: str, session: AsyncSession = Depends(get_session)
+    reset_token: str, session: AsyncSession
 ) -> User | None:
     """
     Отримує об'єкт користувача за токеном скидання пароля.
@@ -148,9 +138,7 @@ async def get_user_by_reset_token(
         return None
 
 
-async def update_avatar(
-    email, url: str, session: AsyncSession = Depends(get_session)
-) -> User:
+async def update_avatar(email, url: str, session: AsyncSession) -> User:
     user = await get_user_by_email(email, session)
     user.avatar = url
     await session.commit()

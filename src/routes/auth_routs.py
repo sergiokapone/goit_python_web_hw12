@@ -23,8 +23,8 @@ from pydantic import EmailStr
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.connect import get_session
-from database.models import User
+from database import get_session
+from database import User
 from schemas import LoginResponse, RequestEmail, UserDb, UserModel, UserResponse
 
 from repository import users as repository_users
@@ -34,7 +34,7 @@ from services.email import send_email, reset_password_by_email
 import cloudinary
 import cloudinary.uploader
 
-from conf.config import settings
+from conf import settings
 
 
 router = APIRouter(tags=["User"])
@@ -120,7 +120,7 @@ async def login(
     # Generate JWT
     access_token = await auth_service.create_access_token(data={"sub": user.email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": user.email})
-    await repository_users.update_token(user, refresh_token, session)
+    repository_users.update_token(user, refresh_token, session)
 
     return LoginResponse(
         user={"username": user.username, "email": user.email, "avatar": user.avatar},

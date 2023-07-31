@@ -1,4 +1,5 @@
 import pytest
+pytestmark = pytest.mark.order(1)
 
 @pytest.mark.asyncio
 async def test_root(client):

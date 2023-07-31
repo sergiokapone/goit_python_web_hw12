@@ -2,8 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi import APIRouter, Depends, status
 
-from database.connect import get_session
-from database.models import User
+from database import get_session
+from database import User
 
 from schemas import ContactCreate
 
@@ -12,12 +12,13 @@ from services.auth import auth_service
 
 router = APIRouter(tags=["Contacts"])
 
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_contact(contact: ContactCreate, 
-                         current_user: User = Depends(auth_service.get_current_user),
-                         session: AsyncSession = Depends(get_session),
-                         ):
-    
+async def create_contact(
+    contact: ContactCreate,
+    current_user: User = Depends(auth_service.get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
     """
     # Створити контакт.
 
@@ -32,14 +33,15 @@ async def create_contact(contact: ContactCreate,
     - Contact: Новостворений об'єкт контакту.
 
     """
-        
+
     return await contacts.create_contact(contact, current_user, session)
+
 
 @router.get("/")
 async def get_all_contacts(
     current_user: User = Depends(auth_service.get_current_user),
     session: AsyncSession = Depends(get_session),
-                            ):
+):
     """
     # Отримати всі контакти.
 
@@ -53,15 +55,16 @@ async def get_all_contacts(
     - List[Contact]: Список контактів.
 
     """
-    
 
     return await contacts.get_all_contacts(current_user, session)
 
+
 @router.delete("/{contact_id}")
-async def delete_contact(contact_id: int,
-                         current_user: User = Depends(auth_service.get_current_user),
-                      session: AsyncSession = Depends(get_session)):
-    
+async def delete_contact(
+    contact_id: int,
+    current_user: User = Depends(auth_service.get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
     """
     # Видалити контакт.
 
@@ -77,17 +80,16 @@ async def delete_contact(contact_id: int,
 
     """
 
-
-
     return await contacts.delete_contact(contact_id, current_user, session)
 
 
 @router.put("/{contact_id}")
-async def update_contact(contact_id: int,
-                         contact: ContactCreate,
-                         current_user: User = Depends(auth_service.get_current_user),
-                      session: AsyncSession = Depends(get_session)):
-    
+async def update_contact(
+    contact_id: int,
+    contact: ContactCreate,
+    current_user: User = Depends(auth_service.get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
     """
     # Оновити контакт.
 
@@ -102,10 +104,9 @@ async def update_contact(contact_id: int,
     ## Повертає:
     - Contact: Оновлений об'єкт контакту.
     """
-        
-    
 
     return await contacts.update_contact(contact_id, contact, current_user, session)
+
 
 @router.get("/birthdays/{days}")
 async def get_upcoming_birthdays(
@@ -113,7 +114,6 @@ async def get_upcoming_birthdays(
     current_user: User = Depends(auth_service.get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    
     """
     # Отримати наближені дні народження контактів.
 
@@ -128,6 +128,5 @@ async def get_upcoming_birthdays(
     ## Raise:
     - HTTPException: Якщо користувач не автентифікований.
     """
-    
 
     return await contacts.get_upcoming_birthdays(days, current_user, session)

@@ -4,18 +4,24 @@ models.py
 This module defines the SQLAlchemy ORM models for the contacts and users tables.
 """
 
+from datetime import datetime
+
+
 from sqlalchemy import (
     Boolean,
-    Column,
     DateTime,
     ForeignKey,
     Integer,
     String,
     Date,
     func,
+    DateTime,
+    MetaData,
 )
-from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy import MetaData
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
 
 metadata = MetaData()
 Base = declarative_base(metadata=metadata)
@@ -28,15 +34,15 @@ class Contact(Base):
 
     __tablename__ = "contacts"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    email = Column(String, nullable=False, unique=True)
-    phone_number = Column(String, nullable=False)
-    birthday = Column(Date, nullable=False)
-    additional_data = Column(String, nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="contacts")
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    first_name: Mapped[str] = mapped_column(nullable=False)
+    last_name: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(nullable=False, unique=True)
+    phone_number: Mapped[str] = mapped_column(nullable=False)
+    birthday: Mapped[datetime] = mapped_column(Date, nullable=False)
+    additional_data: Mapped[str] = mapped_column(nullable=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship("User", back_populates="contacts", lazy=True)
 
 
 class User(Base):
@@ -46,13 +52,15 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String(50))
-    email = Column(String(250), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
-    created_at = Column(DateTime, default=func.now(), nullable=True)
-    avatar = Column(String(255), nullable=True)
-    refresh_token = Column(String(255), nullable=True)
-    confirmed = Column(Boolean, default=False)
-    contacts = relationship("Contact", back_populates="user")
-    reset_token = Column(String(255), nullable=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String(50))
+    email: Mapped[str] = mapped_column(String(250), nullable=False, unique=True)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        "created_at", default=func.now(), nullable=True
+    )
+    avatar: Mapped[str] = mapped_column(String(255), nullable=True)
+    refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
+    confirmed: Mapped[bool] = mapped_column(default=False)
+    contacts: Mapped["Contact"] = relationship("Contact", back_populates="user")
+    reset_token: Mapped[str] = mapped_column(String(255), nullable=True)

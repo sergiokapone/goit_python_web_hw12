@@ -14,7 +14,7 @@ from schemas import ContactCreate
 
 
 async def create_contact(
-    contact: ContactCreate, user: User, session: AsyncSession = Depends(get_session)
+    contact: ContactCreate, user: User, session: AsyncSession
 ):
     """
     Створити контакт.
@@ -60,7 +60,7 @@ async def create_contact(
         )
 
 
-async def get_all_contacts(user: User, session: AsyncSession = Depends(get_session)):
+async def get_all_contacts(user: User, session: AsyncSession):
     """
     Отримати всі контакти.
 
@@ -81,8 +81,7 @@ async def get_all_contacts(user: User, session: AsyncSession = Depends(get_sessi
 
 
 async def delete_contact(
-    contact_id: int, user: User, session: AsyncSession = Depends(get_session)
-):
+    contact_id: int, user: User, session: AsyncSession):
     """
     Видалити контакт.
 
@@ -207,7 +206,7 @@ def is_upcoming_birthday(birthday: date, start_date: date, end_date: date) -> bo
 async def get_upcoming_birthdays(
     days: int,
     user: User,
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession
 ):
     """
     Отримати наближені дні народження контактів.
