@@ -2,28 +2,24 @@ import pytest
 from fastapi import status
 from services.auth import auth_service
 
-pytestmark = pytest.mark.order(3)
+pytestmark = pytest.mark.order(4)
 
 
        
 @pytest.mark.asyncio
 async def test_login_user(client, credentials, test_user):
-    # Аутентификация пользователя
+    
+    # Аутентифікація користувача
     response = await client.post(
         "/users/login",
         data={"username": credentials["username"], "password": credentials["password"]},
     )
     
-    print(credentials)
-
-    # Вывод информации об ошибке
-    print(response.status_code)
-    print(response.text)
-
-    # Проверяем успешную аутентификацию
-    # assert response.status_code == status.HTTP_401_UNAUTHORIZED
     data = response.json()
-    print(data)
+    
+    with open("token", "w") as f:
+        f.write(data["access_token"])
+        
     assert "access_token" in data
-    # assert "token_type" in data and data["token_type"] == "bearer"
+    assert await auth_service.get_email_from_token(data["access_token"]) == credentials["username"]
 

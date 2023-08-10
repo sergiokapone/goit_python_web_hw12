@@ -85,3 +85,22 @@ API додатку надає можливість виконувати наст
 При деплої в `.env` треба використати змінну `REDIS_HOST=redis://red-cimqde98g3n3oc4834lg:6379` [^1]
 
 [^1]: Файл `.env` не присутній в репозиторії `github`.
+
+## Документація
+
+Документація проекту знаходиться в папці  `goit_python_web_hw12\docs\_build\html\`, або за адресою `https://sergiokapone.github.io/goit_python_web_hw12/`
+
+
+## Тестування
+
+Для тестування необхідно прописати в `.env`-файлі 
+
+```shell
+REDIS_HOST=redis://localhost:6379
+```
+і запустити `REDIS` в docker-контейнері.
+
+у папці проекту запустити команду `pytest`
+```shell
+goit_python_web_hw12\pytest
+```

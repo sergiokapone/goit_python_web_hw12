@@ -16,3 +16,8 @@ from .users import (
     update_avatar,
     save_reset_token
 )
+
+from .cloudinary import (
+    upload_to_cloudinary,
+    update_user_avatar,
+)

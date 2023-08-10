@@ -1,2 +1,2 @@
-from .connect import get_session
+from .connect import get_session, DatabaseSessionManager
 from .models import User, Contact, Base

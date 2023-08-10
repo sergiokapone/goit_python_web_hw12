@@ -3,12 +3,8 @@ import pickle
 
 import redis
 
-from typing import Optional
 from passlib.context import CryptContext
-
-
 from environs import Env
-
 from jose import JWTError, jwt
 
 from fastapi import HTTPException, status, Depends
@@ -17,14 +13,20 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from datetime import datetime, timedelta
-from conf.config import settings
+from conf import settings
 
-from database.connect import get_session
+from database import  get_session
+
 from repository import users as repository_users
+
+
+# Environment ==============================================
 
 file_env = pathlib.Path(__file__).parent.joinpath(".env")
 env = Env()
 env.read_env(file_env)
+
+# ==========================================================
 
 
 class Auth:
@@ -53,7 +55,6 @@ class Auth:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
     r = redis.from_url(settings.redis_host)
 
-
     def verify_password(self, plain_password, hashed_password):
         """
         Перевіряє валідність паролю.
@@ -67,7 +68,6 @@ class Auth:
         """
         return self.pwd_context.verify(plain_password, hashed_password)
 
-
     def get_password_hash(self, password: str):
         """
         Генерує хеш паролю.
@@ -80,8 +80,7 @@ class Auth:
         """
         return self.pwd_context.hash(password)
 
-    async def create_access_token(self, data: dict, 
-                                  expires_delta: Optional[float] = None):
+    async def create_access_token(self, data: dict, expires_delta: float | None = None):
         """
         Генерує новий токен доступу.
 
@@ -100,25 +99,23 @@ class Auth:
             expire = datetime.utcnow() + timedelta(minutes=15)
 
         to_encode.update(
-            {
-                "iat": datetime.utcnow(), 
-                "exp": expire, 
-                "scope": "access_token"
-            })
+            {"iat": datetime.utcnow(), "exp": expire, "scope": "access_token"}
+        )
 
-        encoded_access_token = jwt.encode(to_encode, 
-                                          self.SECRET_KEY, 
-                                          algorithm=self.ALGORITHM)
+        encoded_access_token = jwt.encode(
+            to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM
+        )
         return encoded_access_token
 
-    async def create_refresh_token(self, data: dict, 
-                                   expires_delta: Optional[float] = None):
+    async def create_refresh_token(
+        self, data: dict, expires_delta: float | None = None
+    ):
         """
         Генерує новий оновлювальний токен.
 
         Args:
             data (dict): Дані, які будуть закодовані у токені.
-            expires_delta (float, optional): Термін дії токену у секундах. 
+            expires_delta (float, optional): Термін дії токену у секундах.
             За замовчуванням - 7 днів.
 
         Returns:
@@ -132,15 +129,11 @@ class Auth:
             expire = datetime.utcnow() + timedelta(days=7)
 
         to_encode.update(
-                          {
-                            "iat": datetime.utcnow(), 
-                            "exp": expire, 
-                            "scope": "refresh_token"
-                          }
-                          )
-        encoded_refresh_token = jwt.encode(to_encode, 
-                                           self.SECRET_KEY, 
-                                           algorithm=self.ALGORITHM)
+            {"iat": datetime.utcnow(), "exp": expire, "scope": "refresh_token"}
+        )
+        encoded_refresh_token = jwt.encode(
+            to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM
+        )
         return encoded_refresh_token
 
     async def decode_refresh_token(self, refresh_token: str):
@@ -157,25 +150,32 @@ class Auth:
             HTTPException: Виникає, якщо токен недійсний або містить неприпустимий обсяг дій.
         """
         try:
-            payload = jwt.decode(refresh_token, 
-                                 self.SECRET_KEY, 
-                                 algorithms=[self.ALGORITHM])
-            if payload['scope'] == 'refresh_token':
-                email = payload['sub']
+            payload = jwt.decode(
+                refresh_token, self.SECRET_KEY, algorithms=[self.ALGORITHM]
+            )
+            if payload["scope"] == "refresh_token":
+                email = payload["sub"]
                 return email
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                 detail='Invalid scope for token')
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid scope for token",
+            )
         except JWTError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail='Could not validate credentials')
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+            )
 
-    async def get_current_user(self, token: str = Depends(oauth2_scheme),
-                               session: AsyncSession = Depends(get_session)):
+    async def get_current_user(
+        self,
+        token: str = Depends(oauth2_scheme),
+        session: AsyncSession = Depends(get_session),
+    ):
         """
         Отримує поточного користувача на основі переданого токену.
 
         Args:
-            token (str, optional): Токен доступу. 
+            token (str, optional): Токен доступу.
             За замовчуванням використовується залежність "oauth2_scheme".
             session (AsyncSession, optional): Об'єкт сесії бази даних.
 
@@ -194,8 +194,8 @@ class Auth:
         try:
             # Decode JWT
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
-    
-            if payload['scope'] == 'access_token':
+
+            if payload["scope"] == "access_token":
                 email = payload["sub"]
                 if email is None:
                     raise credentials_exception
@@ -217,13 +217,12 @@ class Auth:
             user = pickle.loads(user)
 
         return user
-    
+
     def extract_email_from_token(self, token):
         try:
             decoded_token = jwt.decode(
-                token, 
-                self.SECRET_KEY, 
-                algorithms=[self.ALGORITHM])
+                token, self.SECRET_KEY, algorithms=[self.ALGORITHM]
+            )
             email = decoded_token.get("sub")
             return email
         except JWTError:
@@ -232,27 +231,23 @@ class Auth:
     def create_email_token(self, data: dict):
         to_encode = data.copy()
         expire = datetime.utcnow() + timedelta(days=7)
-        to_encode.update({"iat": datetime.utcnow(),
-                          "exp": expire})
-        token = jwt.encode(to_encode, 
-                           self.SECRET_KEY, 
-                           algorithm=self.ALGORITHM)
+        to_encode.update({"iat": datetime.utcnow(), "exp": expire})
+        token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return token
 
     async def get_email_from_token(self, token: str):
         try:
-            payload = jwt.decode(
-                token, 
-                self.SECRET_KEY, 
-                algorithms=[self.ALGORITHM])
+            payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])
 
             email = payload["sub"]
-            
+
             return email
         except JWTError as e:
             print(e)
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="Invalid token for email verification")
-    
+                detail="Invalid token for email verification",
+            )
+
+
 auth_service = Auth()

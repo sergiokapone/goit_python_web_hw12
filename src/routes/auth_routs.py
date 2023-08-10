@@ -28,14 +28,15 @@ from database import User
 from schemas import LoginResponse, RequestEmail, UserDb, UserModel, UserResponse
 
 from repository import users as repository_users
-from services.auth import auth_service
-from services.email import send_email, reset_password_by_email
+from services import auth_service
+from services import send_email, reset_password_by_email
 
 import cloudinary
 import cloudinary.uploader
 
 from conf import settings
 
+from repository import upload_to_cloudinary, update_user_avatar
 
 router = APIRouter(tags=["User"])
 security = HTTPBearer()
@@ -160,7 +161,7 @@ async def refresh_token(
 
     access_token = await auth_service.create_access_token(data={"sub": email})
     refresh_token = await auth_service.create_refresh_token(data={"sub": email})
-    await repository_users.update_token(user, refresh_token, session)
+    repository_users.update_token(user, refresh_token, session)
     return LoginResponse(
         user={"username": user.username, "email": user.email}, access_token=access_token
     )
@@ -370,18 +371,6 @@ async def update_avatar_user(
 
     """
 
-    cloudinary.config(
-        cloud_name=settings.cloudinary_name,
-        api_key=settings.cloudinary_api_key,
-        api_secret=settings.cloudinary_api_secret,
-        secure=True,
-    )
-
-    r = cloudinary.uploader.upload(
-        file.file, public_id=f"ContactsApp/{current_user.username}", overwrite=True
-    )
-    src_url = cloudinary.CloudinaryImage(
-        f"ContactsApp/{current_user.username}"
-    ).build_url(width=250, height=250, crop="fill", version=r.get("version"))
-    user = await repository_users.update_avatar(current_user.email, src_url, session)
+    src_url = upload_to_cloudinary(file, current_user)
+    user = await update_user_avatar(src_url, current_user, session)
     return user
