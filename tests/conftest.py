@@ -45,8 +45,7 @@ def pytest_sessionstart(session):
 async def overrides_session():
     
     async with sessionmanager.session() as session:
-        yield session
-        await session.close()  
+        yield session 
 
 @pytest.fixture(scope="module")
 async def test_user(overrides_session):
@@ -81,6 +80,18 @@ def user():
         "username": "testuser1",
         "email": "testuser1@example.com",
         "password": "qwer1234",
+    }
+    
+
+@pytest.fixture(scope="module")
+def test_contact():
+    return  {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "johndoe@example.com",
+        "phone_number": "123456789",
+        "birthday": "2000-01-01",
+        "additional_data": "Some additional data"
     }
 
 

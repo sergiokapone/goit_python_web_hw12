@@ -12,9 +12,9 @@ async def test_current(client, test_user):
         access_token = f.read()
     
     
-    # Запрашиваем маршрут /current с токеном доступа
+    # Запитуємо маршрут /current з токеном доступу
     response = await client.get("/users/current",  headers={f"Authorization": f"Bearer {access_token}"})
 
-    # Проверяем успешный ответ
+    # Перевіряємо успішну відповідь
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
