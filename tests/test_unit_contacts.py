@@ -42,7 +42,7 @@ class TestAsync(unittest.IsolatedAsyncioTestCase):
         contact_create = self.contact
         existing_contact = Contact(id=contact_id, user_id=self.user.id)
 
-        session_mock = AsyncMock()
+        session_mock = AsyncMock(spec=AsyncSession)
         session_mock.get.return_value = existing_contact
 
         updated_contact = await update_contact(
@@ -64,7 +64,7 @@ class TestAsync(unittest.IsolatedAsyncioTestCase):
         contact_id = 1
         contact = Contact(id=contact_id, user_id=self.user.id)
 
-        session_mock = AsyncMock()
+        session_mock = AsyncMock(spec=AsyncSession)
         session_mock.get.return_value = contact
 
         result = await delete_contact(contact_id, self.user, session_mock)
