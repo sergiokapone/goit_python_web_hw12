@@ -102,7 +102,7 @@ async def delete_contact(
 
     if not contact:
         raise HTTPException(status_code=404, detail="Contact not found")
-
+    
     if contact.user_id != user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"

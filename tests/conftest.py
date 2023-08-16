@@ -8,7 +8,8 @@ import asyncio
 from fastapi import Depends, status
 from httpx import AsyncClient
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 
@@ -21,64 +22,49 @@ sys.path.insert(
 
 from main import app
 from database import get_session, DatabaseSessionManager, Base
-from conf import settings
+
 
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
-sessionmanager = DatabaseSessionManager(SQLALCHEMY_DATABASE_URL)
+engine = create_async_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+)
+
+TestingSessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
 
 
-async def clear_users_table():
-    async with sessionmanager.session() as session:
-        await session.execute(text('DELETE FROM users'))
-        await session.execute(text('DELETE FROM contacts'))
-        await session.commit()
-        await session.close()
-
-@pytest.hookimpl(tryfirst=True)
-def pytest_sessionstart(session):
-    asyncio.run(clear_users_table())
-    print("Hook pytest_sessionstart was called!")
-        
-# Dependency
-@pytest.fixture(scope="module")
-async def overrides_session():
-    
-    async with sessionmanager.session() as session:
-        yield session 
-
-@pytest.fixture(scope="module")
-async def test_user(overrides_session):
-    # Создайть тестового пользователя и установите confirmed=True
-    async with overrides_session() as session:
-        user_data = {
-            "username": "testuser1",
-            "email": "testuser1@example.com",
-            "password": "qwer1234",
-            "confirmed": True,  # Установите поле confirmed=True
-        }
-        user = User(**user_data)
-        session.add(user)
-        await session.commit()
-
-        yield user_data  # Возвращает данные пользователя для использования в тестах
+@pytest.fixture(scope='module', autouse=True)
+def init_models_fixture():
+    async def init_models():
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(Base.metadata.create_all)
+    asyncio.run(init_models())
 
 
 @pytest.fixture(scope="module")
-def client(overrides_session):
+def client():
     async def override_get_session():
-        return await overrides_session.__anext__()
+        session = TestingSessionLocal()
+        try:
+            yield session
+        except Exception as err:
+            print(err)
+            await session.rollback()
+        finally:
+            await session.close()
 
     app.dependency_overrides[get_session] = override_get_session
 
-    return AsyncClient(app=app, base_url="http://test")
-
+    yield TestClient(app)
 
 @pytest.fixture(scope="module")
 def user():
     return {
-        "username": "testuser1",
-        "email": "testuser1@example.com",
+        "username": "testuser",
+        "email": "testuser@example.com",
         "password": "qwer1234",
     }
     
@@ -98,6 +84,6 @@ def test_contact():
 @pytest.fixture(scope="module")
 def credentials():
     return {
-        "username": "testuser1@example.com",
+        "username": "testuser@example.com",
         "password": "qwer1234",
     }
