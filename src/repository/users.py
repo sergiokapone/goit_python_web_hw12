@@ -95,7 +95,6 @@ async def update_token(user: User, token: str | None, session: AsyncSession) -> 
 
 async def confirmed_email(email: str, session: AsyncSession) -> None:
     user = await get_user_by_email(email, session)
-    print(user)
     user.confirmed = True
     await session.commit()
 

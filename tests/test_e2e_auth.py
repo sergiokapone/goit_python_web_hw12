@@ -1,14 +1,20 @@
 import pytest
+
 from fastapi import status
 from services.auth import auth_service
 from pytest_mock import MockFixture
+from unittest.mock import MagicMock, AsyncMock, patch
+
 
 pytestmark = pytest.mark.order(1)
 
 # =================================== Test root ===============================
 
 
-def test_root(client):
+def test_root(client, monkeypatch):
+    monkeypatch.setattr('fastapi_limiter.FastAPILimiter.redis', AsyncMock())
+    monkeypatch.setattr('fastapi_limiter.FastAPILimiter.identifier', AsyncMock())
+    monkeypatch.setattr('fastapi_limiter.FastAPILimiter.http_callback', AsyncMock())
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Hello World!"}
@@ -93,7 +99,7 @@ async def test_login_user(client, credentials, user):
     )
 
     data = response.json()
-
+    
     with open("token", "w") as f:
         f.write(data["access_token"])
 
@@ -124,14 +130,17 @@ async def test_login_wrong_user(client, credentials, user):
 
 
 @pytest.mark.asyncio
-async def test_current(client, user):
-    with open("token") as f:
-        access_token = f.read()
+async def test_current(client, user, token):
+    
+    access_token = await token
 
-    # Запитуємо маршрут /current з токеном доступу
-    response = client.get(
-        "/users/current", headers={f"Authorization": f"Bearer {access_token}"}
-    )
+    with patch.object(auth_service, "r") as redis_mock:
+        redis_mock.get.return_value = None
 
-    # Перевіряємо успішну відповідь
-    assert response.status_code == status.HTTP_200_OK
+        # Запитуємо маршрут /current з токеном доступу
+        response = client.get(
+            "/users/current", headers={f"Authorization": f"Bearer {access_token}"}
+        )
+
+        # Перевіряємо успішну відповідь
+        assert response.status_code == status.HTTP_200_OK

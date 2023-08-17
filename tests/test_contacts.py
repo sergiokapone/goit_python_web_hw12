@@ -1,5 +1,11 @@
+import pickle
 import pytest
 from fastapi import status
+from unittest.mock import patch
+from services.auth import auth_service
+from unittest.mock import MagicMock, patch
+from sqlalchemy import select
+from database import User
 
 pytestmark = pytest.mark.order(2)
 
@@ -8,56 +14,66 @@ pytestmark = pytest.mark.order(2)
 
 
 @pytest.mark.asyncio
-async def test_create_contact(client, test_contact):
-    with open("token") as f:
-        access_token = f.read()
+async def test_create_contact(client, test_contact, token):
+    
+    access_token = await token
+    
 
-    # Запит на створення контакту з переданим access_token
-    response = client.post(
-        "/contacts/",
-        json=test_contact,
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
+    with patch.object(auth_service, "r") as redis_mock:
+        redis_mock.get.return_value = None
 
-    # Перевірка
-    assert response.status_code == status.HTTP_201_CREATED
-    data = response.json()
-    assert "id" in data
+        print('==================', access_token)
+        
+        # Запит на створення контакту з переданим access_token
+        response = client.post(
+            "/contacts",
+            json=test_contact,
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        # Перевірка
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()
+        assert "id" in data
 
 
 # ============================== Test get contacts ============================
 
 
 @pytest.mark.asyncio
-async def test_get_contacts(client):
-    with open("token") as f:
-        access_token = f.read()
+async def test_get_contacts(client, token):
+    access_token = await token
 
-    response = client.get(
-        "/contacts/",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert isinstance(response.json(), list)
-
+    with patch.object(auth_service, "r") as redis_mock:
+        redis_mock.get.return_value = None
+        response = client.get(
+            "/contacts/",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert isinstance(response.json(), list)
 
 # ============================ Test Remove contact ============================
 
 
 @pytest.mark.asyncio
-async def test_remove_contact(client, test_contact):
-    # Отримуємо токен із файлу "token"
-    with open("token") as f:
-        access_token = f.read()
+async def test_remove_contact(client, test_contact, user, token):
+    
 
-    # Вказуємо ID контакту, який хочемо видалити
+    access_token = await token
+    
     contact_id = 1
+    
+    user = User(id=1, email=user["email"], password=user["password"], username=user["username"])
 
-    # Надсилаємо запит на видалення контакту із зазначенням access token
-    response = client.delete(
-        f"/contacts/{contact_id}",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
 
-    # Перевіряємо успішне видалення та відсутність контакту
-    assert response.status_code == status.HTTP_200_OK
+    with patch.object(auth_service, "r") as redis_mock:
+        redis_mock.get.return_value = pickle.dumps(user)
+        # Надсилаємо запит на видалення контакту із зазначенням access token
+        response = client.delete(
+            f"/contacts/{contact_id}",
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+
+        # Перевіряємо успішне видалення та відсутність контакту
+        assert response.status_code == status.HTTP_200_OK

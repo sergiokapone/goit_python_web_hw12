@@ -63,7 +63,7 @@ async def startup():
 
 
 @app.get("/", tags=["Root"],
-# dependencies=[Depends(RateLimiter(times=2, seconds=5))]
+dependencies=[Depends(RateLimiter(times=2, seconds=5))]
 )
 async def root():
     """
