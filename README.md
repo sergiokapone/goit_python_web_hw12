@@ -102,4 +102,4 @@ goit_python_web_hw12\test.db
 ```shell
 goit_python_web_hw12\pytest
 ```
-Результати тестів здійснені за допомогою `pytest-cov` і знахлдяться за адресою
+Результати тестів здійснені за допомогою `pytest-cov` і знахлдяться за адресою `https://github.com/sergiokapone/goit_python_web_hw12/tree/main/htmlcov`
